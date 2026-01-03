@@ -13,9 +13,11 @@ import com.buuz135.simpleclaims.systems.tick.TitleTickingSystem;
 
 import com.buuz135.simpleclaims.systems.tick.WorldMapUpdateTickingSystem;
 import com.hypixel.hytale.builtin.teleport.TeleportPlugin;
+import com.hypixel.hytale.event.EventPriority;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerInteractEvent;
+import com.hypixel.hytale.server.core.event.events.player.PlayerMouseButtonEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 
@@ -23,7 +25,6 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.events.AddWorldEvent;
 import com.hypixel.hytale.server.core.universe.world.events.RemoveWorldEvent;
 import com.hypixel.hytale.server.core.universe.world.worldmap.provider.IWorldMapProvider;
-import com.hypixel.hytale.server.core.universe.world.worldmap.provider.WorldGenWorldMapProvider;
 import com.hypixel.hytale.server.core.util.Config;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
@@ -40,10 +41,6 @@ public class Main extends JavaPlugin {
     public Main(@NonNullDecl JavaPluginInit init) {
         super(init);
         CONFIG = this.withConfig("SimpleClaims", SimpleClaimsConfig.CODEC);
-    }
-
-    public static void main(String[] args) throws IOException {
-        com.hypixel.hytale.Main.main(new String[]{"--allow-op","--assets=C:\\Users\\buuz1\\AppData\\Roaming\\Hytale\\install\\release\\package\\game\\latest\\Assets", "--packs=C:\\Code\\Java\\Hytale\\SimpleClaims\\src\\main"});
     }
 
     @Override
@@ -65,7 +62,7 @@ public class Main extends JavaPlugin {
         this.getEventRegistry().registerGlobal(AddWorldEvent.class, (event) -> {
             WORLDS.put(event.getWorld().getName(), event.getWorld());
 
-            if (CONFIG.get().isForceSimpleClaimsChunkWorldMap()) event.getWorld().getWorldConfig().setWorldMapProvider(new SimpleClaimsWorldMapProvider());
+            if (CONFIG.get().isForceSimpleClaimsChunkWorldMap() && !event.getWorld().getWorldConfig().isDeleteOnRemove()) event.getWorld().getWorldConfig().setWorldMapProvider(new SimpleClaimsWorldMapProvider());
         });
 
         this.getEventRegistry().registerGlobal(RemoveWorldEvent.class, (event) -> {
@@ -77,11 +74,13 @@ public class Main extends JavaPlugin {
             ClaimManager.getInstance().getPlayerNameTracker().setPlayerName(player.getUuid(), player.getDisplayName());
             ClaimManager.getInstance().markDirty();
         });
+
+        this.getEventRegistry().register(EventPriority.EARLY, PlayerMouseButtonEvent.class, (event) -> {
+            System.out.println("PlayerMouseButtonEvent");
+            System.out.println(event.getItemInHand());
+            System.out.println(event.getMouseButton());
+            event.setCancelled(true);
+        });
     }
 
-    /**
-     * Commands
-     * Gui
-     * Title when changing
-     */
 }

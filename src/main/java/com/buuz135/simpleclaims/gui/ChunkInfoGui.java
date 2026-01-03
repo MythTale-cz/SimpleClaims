@@ -2,14 +2,15 @@ package com.buuz135.simpleclaims.gui;
 
 import com.buuz135.simpleclaims.claim.ClaimManager;
 import com.buuz135.simpleclaims.claim.tracking.ModifiedTracking;
+import com.buuz135.simpleclaims.commands.CommandMessages;
 import com.buuz135.simpleclaims.util.MessageHelper;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
-import com.hypixel.hytale.protocol.CustomPageLifetime;
-import com.hypixel.hytale.protocol.CustomUIEventBindingType;
+import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
+import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.asset.util.ColorParseUtil;
 import com.hypixel.hytale.server.core.entity.entities.Player;
@@ -42,9 +43,9 @@ public class ChunkInfoGui extends InteractiveCustomUIPage<ChunkInfoGui.ChunkInfo
     public void handleDataEvent(@NonNullDecl Ref<EntityStore> ref, @NonNullDecl Store<EntityStore> store, @NonNullDecl ChunkInfoData data) {
         super.handleDataEvent(ref, store, data);
         if (data.action != null){
-            var player = store.getComponent(ref, PlayerRef.getComponentType());
+            var playerRef = store.getComponent(ref, PlayerRef.getComponentType());
             var playerInstance = store.getComponent(ref, Player.getComponentType());
-            var playerParty = ClaimManager.getInstance().getPartyFromPlayer(player.getUuid());
+            var playerParty = ClaimManager.getInstance().getPartyFromPlayer(playerRef.getUuid());
             if (playerParty == null){
                 this.sendUpdate();
                 return;
@@ -54,6 +55,11 @@ public class ChunkInfoGui extends InteractiveCustomUIPage<ChunkInfoGui.ChunkInfo
             var x = Integer.parseInt(actions[1]);
             var z = Integer.parseInt(actions[2]);
             if (button.equals("LeftClicking")) {
+                if (!ClaimManager.getInstance().canClaimInDimension(playerInstance.getWorld())) {
+                    playerRef.sendMessage(CommandMessages.CANT_CLAIM_IN_THIS_DIMENSION);
+                    this.sendUpdate();
+                    return;
+                }
                 var chunk = ClaimManager.getInstance().getChunk(dimension, x, z);
                 if (chunk == null && ClaimManager.getInstance().hasEnoughClaimsLeft(playerParty)) {
                     var chunkInfo = ClaimManager.getInstance().claimChunkBy(dimension, x, z, playerParty, playerInstance);

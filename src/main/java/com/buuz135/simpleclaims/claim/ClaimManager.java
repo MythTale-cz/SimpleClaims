@@ -12,6 +12,7 @@ import com.hypixel.hytale.codec.util.RawJsonReader;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.util.BsonUtil;
 
 import javax.annotation.Nullable;
@@ -112,6 +113,7 @@ public class ClaimManager {
                         var claimPath = FileUtils.ensureFile(FileUtils.CLAIM_PATH, "{}");
                         var dimensionalStorages = new ArrayList<ChunkInfo.ChunkInfoStorage>();
                         this.chunks.forEach((dimension, chunkInfos) -> dimensionalStorages.add(new ChunkInfo.ChunkInfoStorage(dimension, chunkInfos.values().toArray(new ChunkInfo[0]))));
+                        dimensionalStorages.removeIf(chunkInfoStorage -> chunkInfoStorage.getChunkInfos().length == 0);
                         BsonUtil.writeSync(claimPath.toPath(), ChunkInfo.DimensionStorage.CODEC, new ChunkInfo.DimensionStorage(dimensionalStorages.toArray(new ChunkInfo.ChunkInfoStorage[0])), HytaleLogger.getLogger());
                     } catch (IOException e) {
                         logger.at(Level.SEVERE).log(e.getMessage());
@@ -190,6 +192,12 @@ public class ClaimManager {
         this.parties.put(party.getId().toString(), party);
         this.markDirty();
         return party;
+    }
+
+    public boolean canClaimInDimension(World world){
+        if (world.getWorldConfig().isDeleteOnRemove()) return false;
+        if (world.getName().contains("Gaia_Temple")) return false;
+        return true;
     }
 
     @Nullable

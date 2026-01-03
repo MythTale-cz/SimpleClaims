@@ -5,7 +5,8 @@ import com.buuz135.simpleclaims.claim.chunk.ChunkInfo;
 import com.buuz135.simpleclaims.claim.party.PartyInfo;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.math.util.ChunkUtil;
-import com.hypixel.hytale.protocol.UpdateWorldMap;
+import com.hypixel.hytale.protocol.packets.worldmap.MapImage;
+import com.hypixel.hytale.protocol.packets.worldmap.UpdateWorldMap;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.asset.type.environment.config.Environment;
 import com.hypixel.hytale.server.core.asset.type.fluid.Fluid;
@@ -25,7 +26,7 @@ public class CustomImageBuilder {
     private final long index;
     private final World world;
     @Nonnull
-    private final UpdateWorldMap.Chunk.Image image;
+    private final MapImage image;
     private final int sampleWidth;
     private final int sampleHeight;
     private final int blockStepX;
@@ -52,7 +53,7 @@ public class CustomImageBuilder {
     public CustomImageBuilder(long index, int imageWidth, int imageHeight, World world) {
         this.index = index;
         this.world = world;
-        this.image = new UpdateWorldMap.Chunk.Image(imageWidth, imageHeight, new int[imageWidth * imageHeight]);
+        this.image = new MapImage(imageWidth, imageHeight, new int[imageWidth * imageHeight]);
         this.sampleWidth = Math.min(32, this.image.width);
         this.sampleHeight = Math.min(32, this.image.height);
         this.blockStepX = Math.max(1, 32 / this.image.width);
@@ -71,7 +72,7 @@ public class CustomImageBuilder {
     }
 
     @Nonnull
-    public UpdateWorldMap.Chunk.Image getImage() {
+    public MapImage getImage() {
         return this.image;
     }
 
@@ -181,7 +182,6 @@ public class CustomImageBuilder {
         return CompletableFuture.allOf(north, south, west, east, northeast, northwest, southeast, southwest).thenApply((v) -> this);
     }
 
-    @Nonnull
     private CustomImageBuilder generateImageAsync() {
         for(int ix = 0; ix < this.sampleWidth; ++ix) {
             for(int iz = 0; iz < this.sampleHeight; ++iz) {
@@ -200,7 +200,7 @@ public class CustomImageBuilder {
                 int chunkYGround = ChunkUtil.chunkCoordinate(height);
                 int chunkY = 9;
 
-                label101:
+                label97:
                 while(chunkY >= 0 && chunkY >= chunkYGround) {
                     FluidSection fluidSection = this.fluidSections[chunkY];
                     if (fluidSection != null && !fluidSection.isEmpty()) {
@@ -212,7 +212,7 @@ public class CustomImageBuilder {
                             if (fluidId != 0) {
                                 fluid = (Fluid)Fluid.getAssetMap().getAsset(fluidId);
                                 fluidTop = blockY;
-                                break label101;
+                                break label97;
                             }
                         }
 
@@ -223,7 +223,7 @@ public class CustomImageBuilder {
                 }
 
                 int fluidBottom;
-                label123:
+                label119:
                 for(fluidBottom = height; chunkY >= 0 && chunkY >= chunkYGround; --chunkY) {
                     FluidSection fluidSection = this.fluidSections[chunkY];
                     if (fluidSection == null || fluidSection.isEmpty()) {
@@ -240,7 +240,7 @@ public class CustomImageBuilder {
                             Fluid nextFluid = (Fluid)Fluid.getAssetMap().getAsset(nextFluidId);
                             if (!Objects.equals(fluid.getParticleColor(), nextFluid.getParticleColor())) {
                                 fluidBottom = blockY + 1;
-                                break label123;
+                                break label119;
                             }
                         }
                     }
@@ -262,6 +262,13 @@ public class CustomImageBuilder {
         for(int iz = 0; iz < this.sampleHeight; ++iz) {
             System.arraycopy(this.heightSamples, iz * this.sampleWidth, this.neighborHeightSamples, (iz + 1) * (this.sampleWidth + 2) + 1, this.sampleWidth);
         }
+
+        int chunkX = ChunkUtil.xOfChunkIndex(this.index);
+        int chunkZ = ChunkUtil.zOfChunkIndex(this.index);
+        int minBlockX = ChunkUtil.minBlock(chunkX);
+        int minBlockZ = ChunkUtil.minBlock(chunkZ);
+
+        // CUSTOM CODE
         var claimedChunk = ClaimManager.getInstance().getChunk(this.worldChunk.getWorld().getName(), this.worldChunk.getX(), this.worldChunk.getZ());
         PartyInfo partyInfo = null;
         if (claimedChunk != null) {
@@ -273,6 +280,7 @@ public class CustomImageBuilder {
                 ClaimManager.getInstance().getChunk(this.worldChunk.getWorld().getName(), this.worldChunk.getX() + 1, this.worldChunk.getZ()), //EAST
                 ClaimManager.getInstance().getChunk(this.worldChunk.getWorld().getName(), this.worldChunk.getX() - 1, this.worldChunk.getZ()), //WEST
         };
+        //-
 
         for(int ix = 0; ix < this.image.width; ++ix) {
             for(int iz = 0; iz < this.image.height; ++iz) {
@@ -285,6 +293,8 @@ public class CustomImageBuilder {
                 int tint = this.tintSamples[sampleIndex];
                 int blockId = this.blockSamples[sampleIndex];
                 getBlockColor(blockId, tint, this.outColor);
+
+                //CUSTOM CODE
                 if (partyInfo != null){
                     var isBorder = false;
                     var borderSize = 2;
@@ -296,6 +306,8 @@ public class CustomImageBuilder {
                     }
                     getForceBlockColor(blockId, partyInfo.getColor(), this.outColor, isBorder);
                 }
+                //-
+
                 short north = this.neighborHeightSamples[sampleZ * (this.sampleWidth + 2) + sampleX + 1];
                 short south = this.neighborHeightSamples[(sampleZ + 2) * (this.sampleWidth + 2) + sampleX + 1];
                 short west = this.neighborHeightSamples[(sampleZ + 1) * (this.sampleWidth + 2) + sampleX];
@@ -312,12 +324,10 @@ public class CustomImageBuilder {
                         short fluidDepth = this.fluidDepthSamples[sampleIndex];
                         int environmentId = this.environmentSamples[sampleIndex];
                         getFluidColor(fluidId, environmentId, fluidDepth, this.outColor);
-                        this.image.data[iz * this.image.width + ix] = this.outColor.pack();
-                        continue;
                     }
                 }
 
-                this.image.data[iz * this.image.width + ix] = this.outColor.pack();
+                this.populateImageData(iz * this.image.width + ix, sampleX, sampleZ, minBlockX, minBlockZ);
             }
         }
 
@@ -423,6 +433,10 @@ public class CustomImageBuilder {
         outColor.r = (int)((float)tintColorR + (float)((outColor.r & 255) - tintColorR) * depthMultiplier) & 255;
         outColor.g = (int)((float)tintColorG + (float)((outColor.g & 255) - tintColorG) * depthMultiplier) & 255;
         outColor.b = (int)((float)tintColorB + (float)((outColor.b & 255) - tintColorB) * depthMultiplier) & 255;
+    }
+
+    private void populateImageData(int pixelIndex, int sampleX, int sampleZ, int minBlockX, int minBlockZ) {
+        this.image.data[pixelIndex] = this.outColor.pack();
     }
 
     @Nonnull

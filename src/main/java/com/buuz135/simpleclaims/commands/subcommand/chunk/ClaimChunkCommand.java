@@ -7,7 +7,7 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.CommandSender;
-import com.hypixel.hytale.server.core.command.system.basecommands.AsyncCommandBase;
+import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncCommand;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.hypixel.hytale.server.core.command.commands.player.inventory.InventorySeeCommand.MESSAGE_COMMANDS_ERRORS_PLAYER_NOT_IN_WORLD;
 
-public class ClaimChunkCommand extends AsyncCommandBase {
+public class ClaimChunkCommand extends AbstractAsyncCommand {
 
     public ClaimChunkCommand() {
         super("claim", "Claims the chunk where you are");
@@ -37,6 +37,10 @@ public class ClaimChunkCommand extends AsyncCommandBase {
                 return CompletableFuture.runAsync(() -> {
                     PlayerRef playerRefComponent = store.getComponent(ref, PlayerRef.getComponentType());
                     if (playerRefComponent != null) {
+                        if (!ClaimManager.getInstance().canClaimInDimension(world)) {
+                            player.sendMessage(CommandMessages.CANT_CLAIM_IN_THIS_DIMENSION);
+                            return;
+                        }
                         var party = ClaimManager.getInstance().getPartyFromPlayer(player);
                         if (party == null) {
                             party = ClaimManager.getInstance().createParty(player);

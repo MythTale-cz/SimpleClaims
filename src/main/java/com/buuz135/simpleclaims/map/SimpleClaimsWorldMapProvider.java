@@ -5,7 +5,6 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.worldmap.IWorldMap;
 import com.hypixel.hytale.server.core.universe.world.worldmap.WorldMapLoadException;
 import com.hypixel.hytale.server.core.universe.world.worldmap.provider.IWorldMapProvider;
-import com.hypixel.hytale.server.core.universe.world.worldmap.provider.WorldGenWorldMapProvider;
 
 public class SimpleClaimsWorldMapProvider implements IWorldMapProvider {
     public static final String ID = "SimpleClaims";

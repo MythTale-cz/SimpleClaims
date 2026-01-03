@@ -1,5 +1,6 @@
 package com.buuz135.simpleclaims.commands;
 
+import com.buuz135.simpleclaims.claim.ClaimManager;
 import com.buuz135.simpleclaims.commands.subcommand.chunk.ClaimChunkCommand;
 import com.buuz135.simpleclaims.commands.subcommand.chunk.UnclaimChunkCommand;
 import com.buuz135.simpleclaims.commands.subcommand.chunk.op.OpClaimChunkCommand;
@@ -11,7 +12,7 @@ import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.CommandSender;
-import com.hypixel.hytale.server.core.command.system.basecommands.AsyncCommandBase;
+import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncCommand;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -22,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.hypixel.hytale.server.core.command.commands.player.inventory.InventorySeeCommand.MESSAGE_COMMANDS_ERRORS_PLAYER_NOT_IN_WORLD;
 
-public class SimpleClaimProtectCommand extends AsyncCommandBase {
+public class SimpleClaimProtectCommand extends AbstractAsyncCommand {
 
     public SimpleClaimProtectCommand() {
         super("simpleclaims", "Opens the chunk claim gui");
@@ -46,6 +47,15 @@ public class SimpleClaimProtectCommand extends AsyncCommandBase {
                 Store<EntityStore> store = ref.getStore();
                 World world = store.getExternalData().getWorld();
                 return CompletableFuture.runAsync(() -> {
+                    if (!ClaimManager.getInstance().canClaimInDimension(world)) {
+                        player.sendMessage(CommandMessages.CANT_CLAIM_IN_THIS_DIMENSION);
+                        return;
+                    }
+                    var party = ClaimManager.getInstance().getPartyFromPlayer(player);
+                    if (party == null) {
+                        party = ClaimManager.getInstance().createParty(player);
+                        player.sendMessage(CommandMessages.PARTY_CREATED);
+                    }
                     PlayerRef playerRefComponent = store.getComponent(ref, PlayerRef.getComponentType());
                     if (playerRefComponent != null) {
                         player.getPageManager().openCustomPage(ref, store, new ChunkInfoGui(playerRefComponent, player.getWorld().getName(), ChunkUtil.chunkCoordinate(player.getPosition().getX()), ChunkUtil.chunkCoordinate(player.getPosition().getZ()) ));

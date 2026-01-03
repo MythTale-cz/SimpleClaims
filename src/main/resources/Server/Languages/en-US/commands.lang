@@ -7,6 +7,7 @@ errors.simpleclaims.notClaimed = This chunk is not claimed
 errors.simpleclaims.notYourClaim = This chunk doesn't belong to your party
 errors.simpleclaims.notEnoughChunks = Your party doesn't have enough chunks to claim this
 errors.simpleclaims.playerNotFound = Player not found
+errors.simpleclaims.cantClaimInThisDimension = You can't claim chunks in this dimension
 
 simpleclaims.partyCreated = Party Created
 info.simpleclaims.unclaimed = Chunk unclaimed

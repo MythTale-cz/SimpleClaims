@@ -4,6 +4,7 @@ import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.ExtraInfo;
 import com.hypixel.hytale.common.util.PathUtil;
 import com.hypixel.hytale.logger.HytaleLogger;
+import com.hypixel.hytale.server.core.Constants;
 import org.bson.BsonValue;
 import org.bson.json.JsonWriter;
 
@@ -16,7 +17,7 @@ import java.nio.file.*;
 
 public class FileUtils {
 
-    public static String MAIN_PATH = "." + File.separator + "SimpleClaims";
+    public static String MAIN_PATH = Constants.UNIVERSE_PATH.resolve("SimpleClaims").toAbsolutePath().toString();
     public static String PARTY_PATH = MAIN_PATH + File.separator + "Parties.json";
     public static String CLAIM_PATH = MAIN_PATH + File.separator + "Claims.json";
     public static String NAMES_CACHE_PATH = MAIN_PATH + File.separator + "NameCache.json";
@@ -47,26 +48,4 @@ public class FileUtils {
         return file;
     }
 
-    public static <T> void writeSync(@Nonnull Path path, @Nonnull Codec<T> codec, T value, @Nonnull HytaleLogger logger) throws IOException {
-        Path parent = PathUtil.getParent(path);
-        if (!Files.exists(parent, new LinkOption[0])) {
-            Files.createDirectories(parent);
-        }
-
-        if (Files.isRegularFile(path, new LinkOption[0])) {
-            Path resolve = path.resolveSibling(String.valueOf(path.getFileName()) + ".bak");
-            Files.move(path, resolve, StandardCopyOption.REPLACE_EXISTING);
-        }
-
-        ExtraInfo extraInfo = (ExtraInfo)ExtraInfo.THREAD_LOCAL.get();
-        BsonValue bsonValue = codec.encode(value, extraInfo);
-        extraInfo.getValidationResults().logOrThrowValidatorExceptions(logger);
-
-
-        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE)) {
-            var jsonWriter = new JsonWriter(writer);
-
-        }
-
-    }
 }

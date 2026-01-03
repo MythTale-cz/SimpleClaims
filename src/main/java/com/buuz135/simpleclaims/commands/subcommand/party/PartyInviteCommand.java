@@ -10,7 +10,7 @@ import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.CommandSender;
 import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg;
 import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
-import com.hypixel.hytale.server.core.command.system.basecommands.AsyncCommandBase;
+import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncCommand;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -21,14 +21,14 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.hypixel.hytale.server.core.command.commands.player.inventory.InventorySeeCommand.MESSAGE_COMMANDS_ERRORS_PLAYER_NOT_IN_WORLD;
 
-public class PartyInviteCommand extends AsyncCommandBase {
+public class PartyInviteCommand extends AbstractAsyncCommand {
 
-    private RequiredArg<Player> name;
+    private RequiredArg<PlayerRef> name;
 
     public PartyInviteCommand() {
         super("invite", "Invites a player to your party");
         this.setPermissionGroup(GameMode.Adventure);
-        this.name = this.withRequiredArg("player", "The player name", ArgTypes.PLAYER);
+        this.name = this.withRequiredArg("player", "The player name", ArgTypes.PLAYER_REF);
     }
 
     @NonNullDecl
@@ -48,8 +48,13 @@ public class PartyInviteCommand extends AsyncCommandBase {
                             player.sendMessage(CommandMessages.NOT_IN_A_PARTY);
                             return;
                         }
-                        Player invitedPlayer = commandContext.get(this.name);
+                        PlayerRef invitedPlayer = commandContext.get(this.name);
                         if (invitedPlayer == null) {
+                            player.sendMessage(CommandMessages.PLAYER_NOT_FOUND);
+                            return;
+                        }
+                        Player invitedPlayerPlayer = store.getComponent(invitedPlayer.getReference(), Player.getComponentType());
+                        if (invitedPlayerPlayer == null) {
                             player.sendMessage(CommandMessages.PLAYER_NOT_FOUND);
                             return;
                         }
@@ -57,8 +62,8 @@ public class PartyInviteCommand extends AsyncCommandBase {
                             player.sendMessage(CommandMessages.PARTY_INVITE_SELF);
                             return;
                         }
-                        ClaimManager.getInstance().invitePlayerToParty(invitedPlayer, party, player);
-                        player.sendMessage(CommandMessages.PARTY_INVITE_SENT.param("username", invitedPlayer.getDisplayName()));
+                        ClaimManager.getInstance().invitePlayerToParty(invitedPlayerPlayer, party, player);
+                        player.sendMessage(CommandMessages.PARTY_INVITE_SENT.param("username", invitedPlayerPlayer.getDisplayName()));
                         invitedPlayer.sendMessage(CommandMessages.PARTY_INVITE_RECEIVED.param("party_name", party.getName()).param("username", player.getDisplayName()));
                     }
                 }, world);

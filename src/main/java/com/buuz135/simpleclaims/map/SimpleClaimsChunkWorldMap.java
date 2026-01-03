@@ -1,8 +1,7 @@
 package com.buuz135.simpleclaims.map;
 
-import com.hypixel.hytale.math.shape.Box2D;
-import com.hypixel.hytale.protocol.UpdateWorldMap;
-import com.hypixel.hytale.protocol.UpdateWorldMapSettings;
+import com.hypixel.hytale.protocol.packets.worldmap.MapMarker;
+import com.hypixel.hytale.protocol.packets.worldmap.UpdateWorldMapSettings;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.map.WorldMap;
 import com.hypixel.hytale.server.core.universe.world.worldmap.IWorldMap;
@@ -36,10 +35,10 @@ public class SimpleClaimsChunkWorldMap implements IWorldMap {
         }
 
         return CompletableFuture.allOf(futures).thenApply((unused) -> {
-            WorldMap worldMap = new WorldMap(futures.length, imageWidth, imageHeight);
+            WorldMap worldMap = new WorldMap(futures.length);
 
             for(int i = 0; i < futures.length; ++i) {
-                CustomImageBuilder builder = (CustomImageBuilder)futures[i].getNow(null);
+                CustomImageBuilder builder = futures[i].getNow(null);
                 if (builder != null) {
                     worldMap.getChunks().put(builder.getIndex(), builder.getImage());
                 }
@@ -50,7 +49,7 @@ public class SimpleClaimsChunkWorldMap implements IWorldMap {
     }
 
     @Override
-    public CompletableFuture<Map<String, UpdateWorldMap.Marker>> generatePointsOfInterest(World world) {
+    public CompletableFuture<Map<String, MapMarker>> generatePointsOfInterest(World world) {
         return CompletableFuture.completedFuture(Collections.emptyMap());
     }
 }
