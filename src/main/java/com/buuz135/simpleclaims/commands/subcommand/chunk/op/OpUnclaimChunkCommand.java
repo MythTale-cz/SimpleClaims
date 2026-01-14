@@ -44,6 +44,7 @@ public class OpUnclaimChunkCommand extends AbstractAsyncCommand {
                         }
                         ClaimManager.getInstance().unclaimRawCoords(player.getWorld().getName(), (int) playerRef.getTransform().getPosition().getX(), (int) playerRef.getTransform().getPosition().getZ());
                         player.sendMessage(CommandMessages.UNCLAIMED);
+                        player.getWorldMapTracker().tick(0);
                     }
                 }, world);
             } else {

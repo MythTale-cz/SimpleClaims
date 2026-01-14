@@ -57,6 +57,7 @@ public class ClaimChunkCommand extends AbstractAsyncCommand {
                         }
                     var chunkInfo = ClaimManager.getInstance().claimChunkByRawCoords(player.getWorld().getName(), (int) playerRef.getTransform().getPosition().getX(), (int) playerRef.getTransform().getPosition().getZ(), party, player, playerRef);
                         player.sendMessage(CommandMessages.CLAIMED);
+                        player.getWorldMapTracker().tick(0);
                 }, world);
             } else {
                 commandContext.sendMessage(MESSAGE_COMMANDS_ERRORS_PLAYER_NOT_IN_WORLD);
