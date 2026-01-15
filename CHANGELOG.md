@@ -3,6 +3,7 @@
 * Players can now be invited to a party from the edit party screen closes #15
 * Pending player invites now show in the member list of the party
 * Added ally system to parties, closes #28
+* Added a button to the admin party screen to open the claim chunks gui in admin mode, closes #31
 
 # 1.0.10
 
