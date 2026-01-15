@@ -20,10 +20,26 @@ repositories {
     mavenCentral()
 }
 
+
+def os = org.gradle.internal.os.OperatingSystem.current()
+def userHome = System.getProperty("user.home")
+
+def hytaleServerJar
+if (os.isWindows()) {
+    hytaleServerJar = "$userHome/AppData/Roaming/Hytale/install/release/package/game/$game_build/Server/HytaleServer.jar"
+} else if (os.isMacOsX()) {
+    hytaleServerJar = "$userHome/Library/Application Support/Hytale/install/release/package/game/$game_build/Server/HytaleServer.jar"
+} else if (os.isLinux()) {
+    hytaleServerJar = "$userHome/.local/share/Hytale/install/release/package/game/$game_build/Server/HytaleServer.jar"
+} else {
+    throw new GradleException("Unsupported OS for Hytale")
+}
+
+
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    implementation(files(System.getProperty("user.home") + "/AppData/Roaming/Hytale/install/release/package/game/$game_build/Server/HytaleServer.jar"))
+    implementation files(hytaleServerJar)
 }
 
 test {
