@@ -183,10 +183,12 @@ public class ClaimManager {
         var chunkParty = getPartyById(chunkInfo.getPartyOwner());
         if (chunkParty == null || interactMethod.test(chunkParty)) return true;
 
+        if (chunkParty.getPlayerAllies().contains(playerUUID)) return true;
+
         var partyId = playerToParty.get(playerUUID);
         if (partyId == null) return false;
 
-        return chunkInfo.getPartyOwner().equals(partyId);
+        return chunkInfo.getPartyOwner().equals(partyId) || chunkParty.getPartyAllies().contains(partyId);
     }
 
     @Nullable
@@ -306,6 +308,10 @@ public class ClaimManager {
         this.playerToParty.put(player.getUuid(), party.getId());
         this.partyInvites.remove(player.getUuid());
         return invite;
+    }
+
+    public Map<UUID, PartyInvite> getPartyInvites() {
+        return partyInvites;
     }
 
     public void leaveParty(PlayerRef player, PartyInfo partyInfo) {

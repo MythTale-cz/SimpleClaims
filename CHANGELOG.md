@@ -1,3 +1,9 @@
+# 1.0.11
+
+* Players can now be invited to a party from the edit party screen closes #15
+* Pending player invites now show in the member list of the party
+* Added ally system to parties, closes #28
+
 # 1.0.10
 
 * Fixed Map Ticking task running off thread when checking for components, closes #18
