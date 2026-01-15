@@ -5,6 +5,7 @@
 * Added ally system to parties, closes #28
 * Added a button to the admin party screen to open the claim chunks gui in admin mode, closes #31
 * Added a command to change the chunk amount for all parties, closes #14
+* Added a config option to disable the PVP toggle, closes #25
 
 # 1.0.10
 
