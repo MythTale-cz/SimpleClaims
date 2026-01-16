@@ -210,7 +210,7 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
             uiCommandBuilder.append("#MemberEntries", "Pages/Buuz135_SimpleClaims_PartyMemberListEntry.ui");
             var isOwner = this.info.isOwner(this.info.getMembers()[i]);
             uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberName.Text", ClaimManager.getInstance().getPlayerNameTracker().getPlayerName(this.info.getMembers()[i]));
-            uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberRole.Text", isOwner ? "Owner" : "Member");
+            uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberRole.Text", isOwner ? "Vlastnik" : "Clen");
             if (!isOwner) {
                 uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberRole.Background.Color", "#1a8dec83");
                 uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberRole.OutlineColor", "#1a8decde");
@@ -220,7 +220,7 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
             } else {
                 //uiEventBuilder.addEventBinding(CustomUIEventBindingType.SlotMouseExited, "#Members[" + i + "] #RemoveMemberButton", EventData.of("RemoveButtonAction", "Left:" + i), false);
                 if (this.requestingConfirmation == i) {
-                    uiCommandBuilder.set("#MemberEntries[" + i + "] #RemoveMemberButton.Text", "Are you sure?");
+                    uiCommandBuilder.set("#MemberEntries[" + i + "] #RemoveMemberButton.Text", "Jsi si jist?");
                     uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#MemberEntries[" + i + "] #RemoveMemberButton", EventData.of("RemoveButtonAction", "Delete:" + i), false);
                     uiEventBuilder.addEventBinding(CustomUIEventBindingType.MouseExited, "#MemberEntries[" + i + "] #RemoveMemberButton", EventData.of("RemoveButtonAction", "Click:-1"), false);
                 } else {

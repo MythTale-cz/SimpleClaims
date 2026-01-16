@@ -23,8 +23,10 @@ import static com.hypixel.hytale.server.core.command.commands.player.inventory.I
 public class PartyAcceptCommand extends AbstractAsyncCommand {
 
     public PartyAcceptCommand() {
-        super("invite-accept", "Accepts your most recent party invite");
-        this.requirePermission(CommandMessages.BASE_PERM + "accept-invite");
+        super("accept", "Accepts your most recent party invite");
+    }
+    protected boolean canGeneratePermission() {
+        return false;
     }
 
     @NonNullDecl

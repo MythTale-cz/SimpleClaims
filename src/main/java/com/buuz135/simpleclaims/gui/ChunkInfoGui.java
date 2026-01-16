@@ -150,23 +150,23 @@ public class ChunkInfoGui extends InteractiveCustomUIPage<ChunkInfoGui.ChunkInfo
                         uiCommandBuilder.set("#ChunkCards[" + z + "][" + x + "].OutlineColor", ColorParseUtil.colorToHexAlpha(color));
                         uiCommandBuilder.set("#ChunkCards[" + z + "][" + x + "].OutlineSize", 1);
                         var tooltip = MessageHelper.multiLine()
-                                .append(Message.raw("Owner: ").bold(true).color(hytaleGold))
+                                .append(Message.raw("Vlastnik: ").bold(true).color(hytaleGold))
                                 .append(Message.raw(partyInfo.getName())).nl()
-                                .append(Message.raw("Description: ").bold(true).color(hytaleGold))
+                                .append(Message.raw("Popisek: ").bold(true).color(hytaleGold))
                                 .append(Message.raw(partyInfo.getDescription()));
                         if (playerParty != null && playerParty.getId().equals(partyInfo.getId())) {
-                            tooltip = tooltip.nl().nl().append(Message.raw("*Right Click to Unclaim*").bold(true).color(Color.RED.darker().darker()));
+                            tooltip = tooltip.nl().nl().append(Message.raw("-> Pravym Klikem Unclaimnes").bold(true).color("#ff6161"));
                         }
                         uiCommandBuilder.set("#ChunkCards[" + z + "][" + x + "].TooltipTextSpans", tooltip.build());
                         uiEventBuilder.addEventBinding(CustomUIEventBindingType.RightClicking, "#ChunkCards[" + z + "][" + x + "]", EventData.of("Action", "RightClicking:" + (chunkX + x - 8) + ":" + (chunkZ + z - 8)));
                     }
                 } else {
-                    var tooltip = MessageHelper.multiLine().append(Message.raw("Wilderness" ).bold(true).color(Color.GREEN.darker()));
+                    var tooltip = MessageHelper.multiLine().append(Message.raw("Priroda" ).bold(true).color(Color.GREEN.darker()));
                     if (playerParty != null) {
-                        tooltip = tooltip.nl().nl().append(Message.raw("*Left Click to claim*").bold(true).color(Color.GRAY));
+                        tooltip = tooltip.nl().nl().append(Message.raw("-> Levym klikem Claimnes").bold(true).color(Color.decode("#9cffa5")));
                         uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#ChunkCards[" + z + "][" + x + "]", EventData.of("Action", "LeftClicking:" + (chunkX + x - 8) + ":" + (chunkZ + z - 8)));
                     } else {
-                        tooltip = tooltip.nl().nl().append(Message.raw("*Create a party to claim*").bold(true).color(Color.GRAY));
+                        tooltip = tooltip.nl().nl().append(Message.raw("-> Vytvor Party").bold(true).color(hytaleGold));
                     }
                     uiCommandBuilder.set("#ChunkCards[" + z + "][" + x + "].TooltipTextSpans", tooltip.build());
                 }

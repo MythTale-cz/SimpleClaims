@@ -7,7 +7,7 @@ $C.@PageOverlay {
     #Title {
       Group {
         $C.@Title {
-          @Text = "All server parties";
+          @Text = "Vsechny party na Serveru";
         }
 
         $C.@HeaderSearch {}

@@ -25,7 +25,10 @@ public class PartyLeaveCommand extends AbstractAsyncCommand {
 
     public PartyLeaveCommand() {
         super("leave", "Leaves the party you are in, if you are the owner the ownership will be transferred to the first member, \nif there aren't any members the party will be disbanded");
-        this.requirePermission(CommandMessages.BASE_PERM + "party-leave");
+    }
+
+    protected boolean canGeneratePermission() {
+        return false;
     }
 
     @NonNullDecl

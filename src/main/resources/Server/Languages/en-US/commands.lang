@@ -1,29 +1,29 @@
-errors.simpleclaims.playerNotInParty = You need to be in a party to do that
-errors.simpleclaims.playerInParty = You are already in a party
+errors.simpleclaims.playerNotInParty = Musis byt v Party
+errors.simpleclaims.playerInParty = Jiz jsi v Party
 
-errors.simpleclaims.alreadyClaimedByYou = This chunk is already claimed by your party
-errors.simpleclaims.alreadyClaimedByAnotherPlayer = This chunk is already claimed by another party
-errors.simpleclaims.notClaimed = This chunk is not claimed
-errors.simpleclaims.notYourClaim = This chunk doesn't belong to your party
-errors.simpleclaims.notEnoughChunks = Your party doesn't have enough chunks to claim this
-errors.simpleclaims.playerNotFound = Player not found
-errors.simpleclaims.cantClaimInThisDimension = You can't claim chunks in this dimension
+errors.simpleclaims.alreadyClaimedByYou = Tento chunk nemuze byt zabran tvou Party
+errors.simpleclaims.alreadyClaimedByAnotherPlayer = Tento chunk je jiz zabran jinou Party
+errors.simpleclaims.notClaimed = Tento chunk neni zabran
+errors.simpleclaims.notYourClaim = Tento chunk nepatri tve Party
+errors.simpleclaims.notEnoughChunks = Tva Party nema dostatek dostupnych claimu
+errors.simpleclaims.playerNotFound = Hrac nebyl nalezen
+errors.simpleclaims.cantClaimInThisDimension = Nemuzes zabrat chunky v teto dimenzi
 
-simpleclaims.partyCreated = Party Created
-info.simpleclaims.unclaimed = Chunk unclaimed
-info.simpleclaims.claimed = Chunk claimed
-simpleclaims.nowUsingParty = Now using party: 
+simpleclaims.partyCreated = Party vytvorena
+info.simpleclaims.unclaimed = Chunk unclaimnut
+info.simpleclaims.claimed = Chunk claimnut
+simpleclaims.nowUsingParty = Nyni pouzivas Party:
 
 errors.simpleclaims.admin.partyNotSelected = Party not selected as an admin
-errors.simpleclaims.admin.partyNotFound = Party not found
+errors.simpleclaims.admin.partyNotFound = Party nebyla nalezena
 
-simpleclaims.partyInviteSent = Party invite sent to {username}
-simpleclaims.partyInviteReceived = Party invited recieved from {username} to join {party_name}, use command '/scp invite-accept' to join the party.
-simpleclaims.partyInviteJoined = {username} has joined the party {party_name}
-simpleclaims.partyInviteSelf = This player is already a member of the party
-simpleclaims.partyLeft = You have left your party
-simpleclaims.partyDisbanded = You have left your party, as there aren't any members left the party has been dismantled
-simpleclaims.partyOwnerTransferred = You have left your party, and the ownership has been transfered to {username}
+simpleclaims.partyInviteSent = Pozvanka do Party odeslana hraci {username}
+simpleclaims.partyInviteReceived = Dostal jsi pozvanku do Party hrace {username}. Pro pripojeni do {party_name}, pouzij '/scp accept' pro pripojeni do Party.
+simpleclaims.partyInviteJoined = {username} se pripojil do tve Party {party_name}
+simpleclaims.partyInviteSelf = Tento hrac je jiz soucasti tve Party
+simpleclaims.partyLeft = Opustil jsi Party
+simpleclaims.partyDisbanded = Opustil jsi svoji Party. Jelikoz v ni nejsou zadni cleni, tak byla zrusena.
+simpleclaims.partyOwnerTransferred = Opustil jsi svoj party. Vlastnictvi prevedo na {username}
 simpleclaims.modifiedMaxChunkAmount = You have changed the max claimed chunk amount for {party_name} to {amount} chunks
 simpleclaims.enabledOverride = Enabled admin interaction override
 simpleclaims.disabledOverride = Disabled admin interaction override

@@ -23,7 +23,9 @@ public class CreatePartyCommand extends AbstractAsyncCommand {
 
     public CreatePartyCommand() {
         super("create", "Creates a new party");
-        this.requirePermission(CommandMessages.BASE_PERM + "create-party");
+    }
+    protected boolean canGeneratePermission() {
+        return false;
     }
 
     @NonNullDecl

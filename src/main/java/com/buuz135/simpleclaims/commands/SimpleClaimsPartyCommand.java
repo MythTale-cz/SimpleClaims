@@ -29,7 +29,7 @@ public class SimpleClaimsPartyCommand extends AbstractAsyncCommand {
     public SimpleClaimsPartyCommand() {
         super("simpleclaimsparty", "Simple Claims Party Commands" );
         this.addAliases("scp", "sc-party");
-        this.requirePermission(CommandMessages.BASE_PERM + "edit-party");
+        this.setPermissionGroup(GameMode.Adventure);
 
         this.addSubCommand(new CreatePartyCommand());
         this.addSubCommand(new PartyInviteCommand());
@@ -42,6 +42,9 @@ public class SimpleClaimsPartyCommand extends AbstractAsyncCommand {
         this.addSubCommand(new OpAllModifyChunkAmountCommand());
         this.addSubCommand(new OpOverrideCommand());
         this.addSubCommand(new OpAddChunkAmountCommand());
+    }
+    protected boolean canGeneratePermission() {
+        return false;
     }
 
     @NonNullDecl

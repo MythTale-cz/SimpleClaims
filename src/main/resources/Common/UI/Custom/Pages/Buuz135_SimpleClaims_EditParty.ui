@@ -25,7 +25,7 @@ $C.@PageOverlay {
     #Title {
       Group {
         $C.@Title {
-          @Text = "Party Information";
+          @Text = "Informace o Party";
         }
 
         
@@ -44,7 +44,7 @@ $C.@PageOverlay {
         // Party Name Field
 
         Label #PartyName {
-          Text: "Party Name";
+          Text: "Nazev Party";
           Style: (
             RenderUppercase: true,
             RenderBold: true,
@@ -70,7 +70,7 @@ $C.@PageOverlay {
             LayoutMode: Left;
             Anchor: (Top: 10, Left: 10);
             Label  {
-              Text: "Claimed Chunks: ";
+              Text: "Zabrane Chunky: ";
               Style: (
                 TextColor: #93844c(1)
               );
@@ -95,7 +95,7 @@ $C.@PageOverlay {
         // Party Description Field
 
         Label #PartyDescription {
-          Text: "Party Description";
+          Text: "Popisek Party";
           Style: (
             RenderUppercase: true,
             RenderBold: true,
@@ -120,7 +120,7 @@ $C.@PageOverlay {
 
         // Party Settings
         Label #MemberList {
-          Text: "Non-Members Protection Settings";
+          Text: "Nastaveni Zabezpeceni Chunku";
           Style: (
             RenderUppercase: true,
             RenderBold: true,
@@ -134,17 +134,17 @@ $C.@PageOverlay {
           Anchor: (Bottom: 10);
 
           $C.@CheckBoxWithLabel #PlaceBlocksSetting {
-            @Text = "Allow Block Placement";
+            @Text = "Povolit Pokladani Bloku";
             Padding: (Bottom: 4);
           }
 
           $C.@CheckBoxWithLabel #BreakBlocksSetting {
-            @Text = "Allow Block Breaking";
+            @Text = "Povolit Niceni Bloku";
             Padding: (Bottom: 4);
           }
 
           $C.@CheckBoxWithLabel #InteractBlocksSetting {
-            @Text = "Allow Block Interact";
+            @Text = "Povolit Interakci Bloku";
             Padding: (Bottom: 4);
           }
           $C.@CheckBoxWithLabel #PVPSetting {
@@ -169,7 +169,7 @@ $C.@PageOverlay {
             LayoutMode: Top;
 
             Label #MemberList {
-              Text: "Members";
+              Text: "Cleni";
               Style: (
               RenderUppercase: true,
               RenderBold: true,
@@ -262,7 +262,7 @@ $C.@PageOverlay {
             LayoutMode: Top;
 
             Label #ClaimColorLabel {
-              Text: "Claim Color";
+              Text: "Barva Claimu";
               Style: (
                 RenderUppercase: true,
                 RenderBold: true,
@@ -291,14 +291,14 @@ $C.@PageOverlay {
           Anchor: (Bottom: 10);
 
           $C.@TextButton #SaveChangesButton {
-            Text: "Save Changes";
+            Text: "Ulozit zmeny";
             Padding: (Left: 12, Right: 12, Top: 6, Bottom: 6);
             Anchor: (Right: 10);
             Overscroll: false;
           }
 
           $C.@CancelTextButton #CancelButton {
-            Text: "Cancel";
+            Text: "Zrusit";
             Padding: (Left: 12, Right: 12, Top: 6, Bottom: 6);
             Anchor: (Right: 10);
             Overscroll: false;
