@@ -1,6 +1,7 @@
 # 1.0.14
 
 * Fixed inviting players to a party using the GUI not working properly
+* Changed containers to use decorated containers
 
 # 1.0.13
 
