@@ -37,7 +37,6 @@ import java.util.logging.Level;
 public class Main extends JavaPlugin {
 
     public static Config<SimpleClaimsConfig> CONFIG;
-    public static HashMap<String, World> WORLDS = new HashMap<>();
 
     public Main(@NonNullDecl JavaPluginInit init) {
         super(init);
@@ -52,7 +51,7 @@ public class Main extends JavaPlugin {
         this.getEntityStoreRegistry().registerSystem(new PlaceBlockEventSystem());
         this.getEntityStoreRegistry().registerSystem(new InteractEventSystem());
         this.getEntityStoreRegistry().registerSystem(new PickupInteractEventSystem());
-        this.getEntityStoreRegistry().registerSystem(new TitleTickingSystem());
+        this.getEntityStoreRegistry().registerSystem(new TitleTickingSystem(CONFIG.get().getTitleTopClaimTitleText()));
         this.getEntityStoreRegistry().registerSystem(new CustomDamageEventSystem());
         this.getChunkStoreRegistry().registerSystem(new WorldMapUpdateTickingSystem());
         this.getCommandRegistry().registerCommand(new SimpleClaimProtectCommand());
@@ -63,7 +62,6 @@ public class Main extends JavaPlugin {
         ClaimManager.getInstance();
 
         this.getEventRegistry().registerGlobal(AddWorldEvent.class, (event) -> {
-            WORLDS.put(event.getWorld().getName(), event.getWorld());
             this.getLogger().at(Level.INFO).log("Registered world: " + event.getWorld().getName());
 
             if (CONFIG.get().isForceSimpleClaimsChunkWorldMap() && !event.getWorld().getWorldConfig().isDeleteOnRemove()) {
@@ -72,10 +70,6 @@ public class Main extends JavaPlugin {
             } else {
                 event.getWorld().getWorldConfig().setWorldMapProvider(new WorldGenWorldMapProvider());
             }
-        });
-
-        this.getEventRegistry().registerGlobal(RemoveWorldEvent.class, (event) -> {
-            WORLDS.remove(event.getWorld().getName());
         });
 
         this.getEventRegistry().registerGlobal(AddPlayerToWorldEvent.class, (event) -> {
