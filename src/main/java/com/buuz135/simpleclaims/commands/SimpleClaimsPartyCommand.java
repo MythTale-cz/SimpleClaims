@@ -29,7 +29,6 @@ public class SimpleClaimsPartyCommand extends AbstractAsyncCommand {
     public SimpleClaimsPartyCommand() {
         super("simpleclaimsparty", "Simple Claims Party Commands" );
         this.addAliases("scp", "sc-party");
-        this.setPermissionGroup(GameMode.Adventure);
 
         this.addSubCommand(new CreatePartyCommand());
         this.addSubCommand(new PartyInviteCommand());

@@ -21,7 +21,6 @@ public class UnclaimChunkCommand extends AbstractAsyncCommand {
 
     public UnclaimChunkCommand() {
         super("unclaim", "Unclaims the chunk where you are");
-        this.requirePermission(CommandMessages.BASE_PERM + "unclaim");
     }
     protected boolean canGeneratePermission() {
         return false;
