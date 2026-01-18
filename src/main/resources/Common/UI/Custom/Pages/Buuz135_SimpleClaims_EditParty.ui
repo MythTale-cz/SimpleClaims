@@ -153,6 +153,14 @@ $C.@PageOverlay {
             @Text = "Allow Block Interact";
             Padding: (Bottom: 4);
           }
+
+          $C.@TextButton #EditInteractButton {
+            Anchor: (Height: 22, Left: -20, Top: 0, Right: 10);
+            Padding: ();
+            Text: "  EDIT  ";
+            Style: @CustomStyle;
+          }
+
           $C.@CheckBoxWithLabel #PVPSetting {
             @Text = "PVP";
             Padding: (Bottom: 4);

@@ -8,6 +8,7 @@ import com.buuz135.simpleclaims.claim.party.PartyOverrides;
 import com.buuz135.simpleclaims.Main;
 import com.buuz135.simpleclaims.commands.CommandMessages;
 import com.buuz135.simpleclaims.gui.subscreens.ChunkListGui;
+import com.buuz135.simpleclaims.gui.subscreens.InteractGui;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -198,6 +199,10 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
                 player.getPageManager().openCustomPage(ref, store, new ChunkListGui(playerRef, this.info, this, this.isOpEdit));
                 return;
             }
+            if (data.button.equals("EditInteract")) {
+                player.getPageManager().openCustomPage(ref, store, new InteractGui(playerRef, this.info, this, this.isOpEdit));
+                return;
+            }
         }
         this.sendUpdate();
     }
@@ -324,8 +329,10 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
         if (!isOpEdit)
             uiCommandBuilder.set("#BreakBlocksSetting #CheckBox.Disabled", !playerCanModify || !Main.CONFIG.get().isAllowPartyPlaceBlockSetting());
         uiCommandBuilder.set("#InteractBlocksSetting #CheckBox.Value",this.info.isBlockInteractEnabled());
-        if (!isOpEdit)
+        if (!isOpEdit) {
             uiCommandBuilder.set("#InteractBlocksSetting #CheckBox.Disabled", !playerCanModify || !Main.CONFIG.get().isAllowPartyInteractBlockSetting());
+            uiCommandBuilder.set("#EditInteractButton.Disabled", !playerCanModify || !Main.CONFIG.get().isAllowPartyInteractBlockSetting());
+        }
         uiCommandBuilder.set("#PVPSetting #CheckBox.Value", this.info.isPVPEnabled());
         if (!isOpEdit)
             uiCommandBuilder.set("#PVPSetting #CheckBox.Disabled", !playerCanModify || !Main.CONFIG.get().isAllowPartyPVPSetting());
@@ -339,6 +346,7 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#InteractBlocksSetting #CheckBox", EventData.of("RemoveButtonAction", "InteractBlocksSetting:0"), false);
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#PVPSetting #CheckBox", EventData.of("RemoveButtonAction", "PVPSetting:0"), false);
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#AllowEntrySetting #CheckBox", EventData.of("RemoveButtonAction", "AllowEntrySetting:0"), false);
+        uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#EditInteractButton", EventData.of("Button", "EditInteract"), false);
 
         uiCommandBuilder.set("#ClaimColorPickerGroup #ClaimColorPicker.Value", String.format("#%06X", (0xFFFFFF & this.info.getColor())));
         //uiCommandBuilder.set("#ClaimColorPickerGroup #ClaimColorPicker.IsReadOnly", !playerCanModify);

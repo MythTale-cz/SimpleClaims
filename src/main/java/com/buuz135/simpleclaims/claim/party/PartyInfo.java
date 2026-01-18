@@ -35,6 +35,7 @@ public class PartyInfo {
         setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_BREAK_BLOCKS, new PartyOverride.PartyOverrideValue("bool", Main.CONFIG.get().isDefaultPartyBlockBreakEnabled())));
         setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_INTERACT, new PartyOverride.PartyOverrideValue("bool", Main.CONFIG.get().isDefaultPartyBlockInteractEnabled())));
         setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_ALLOW_ENTRY, new PartyOverride.PartyOverrideValue("bool", Main.CONFIG.get().isDefaultPartyAllowEntry())));
+        setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_INTERACT_PORTAL, new PartyOverride.PartyOverrideValue("bool", Main.CONFIG.get().isDefaultPartyInteractPortal())));
         this.createdTracked = new ModifiedTracking();
         this.modifiedTracked = new ModifiedTracking();
         this.partyAllies = new HashSet<>();
@@ -165,6 +166,46 @@ public class PartyInfo {
             return (Boolean) override.getValue().getTypedValue();
         }
         return Main.CONFIG.get().isDefaultPartyAllowEntry();
+    }
+
+    public boolean isChestInteractEnabled() {
+        var override = this.getOverride(PartyOverrides.PARTY_PROTECTION_INTERACT_CHEST);
+        if (override != null) {
+            return (Boolean) override.getValue().getTypedValue();
+        }
+        return Main.CONFIG.get().isDefaultPartyInteractChest();
+    }
+
+    public boolean isDoorInteractEnabled() {
+        var override = this.getOverride(PartyOverrides.PARTY_PROTECTION_INTERACT_DOOR);
+        if (override != null) {
+            return (Boolean) override.getValue().getTypedValue();
+        }
+        return Main.CONFIG.get().isDefaultPartyInteractDoor();
+    }
+
+    public boolean isBenchInteractEnabled() {
+        var override = this.getOverride(PartyOverrides.PARTY_PROTECTION_INTERACT_BENCH);
+        if (override != null) {
+            return (Boolean) override.getValue().getTypedValue();
+        }
+        return Main.CONFIG.get().isDefaultPartyInteractBench();
+    }
+
+    public boolean isChairInteractEnabled() {
+        var override = this.getOverride(PartyOverrides.PARTY_PROTECTION_INTERACT_CHAIR);
+        if (override != null) {
+            return (Boolean) override.getValue().getTypedValue();
+        }
+        return Main.CONFIG.get().isDefaultPartyInteractChair();
+    }
+
+    public boolean isPortalInteractEnabled() {
+        var override = this.getOverride(PartyOverrides.PARTY_PROTECTION_INTERACT_PORTAL);
+        if (override != null) {
+            return (Boolean) override.getValue().getTypedValue();
+        }
+        return Main.CONFIG.get().isDefaultPartyInteractPortal();
     }
 
     public void setOverride(PartyOverride override){

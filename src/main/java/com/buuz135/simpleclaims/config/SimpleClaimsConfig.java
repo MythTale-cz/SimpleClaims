@@ -19,18 +19,28 @@ public class SimpleClaimsConfig {
             .append(new KeyedCodec<Boolean>("DefaultPartyBlockInteractEnabled", Codec.BOOLEAN),
                     (simpleClaimsConfig, aDouble, extraInfo) -> simpleClaimsConfig.DefaultPartyBlockInteractEnabled = aDouble,
                     (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.DefaultPartyBlockInteractEnabled).add()
-            .append(new KeyedCodec<Boolean>("ForceSimpleClaimsChunkWorldMap", Codec.BOOLEAN),
-                    (simpleClaimsConfig, aDouble, extraInfo) -> simpleClaimsConfig.ForceSimpleClaimsChunkWorldMap = aDouble,
-                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.ForceSimpleClaimsChunkWorldMap).add()
-            .append(new KeyedCodec<Boolean>("CreativeModeBypassProtection", Codec.BOOLEAN),
-                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.CreativeModeBypassProtection = value,
-                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.CreativeModeBypassProtection).add()
             .append(new KeyedCodec<Boolean>("DefaultPartyPVPEnabled", Codec.BOOLEAN),
                     (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.DefaultPartyPVPEnabled = value,
                     (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.DefaultPartyPVPEnabled).add()
             .append(new KeyedCodec<Boolean>("DefaultPartyAllowEntry", Codec.BOOLEAN),
                     (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.DefaultPartyAllowEntry = value,
                     (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.DefaultPartyAllowEntry).add()
+            .append(new KeyedCodec<Boolean>("DefaultPartyInteractChest", Codec.BOOLEAN),
+                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.DefaultPartyInteractChest = value,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.DefaultPartyInteractChest).add()
+            .append(new KeyedCodec<Boolean>("DefaultPartyInteractDoor", Codec.BOOLEAN),
+                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.DefaultPartyInteractDoor = value,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.DefaultPartyInteractDoor).add()
+            .append(new KeyedCodec<Boolean>("DefaultPartyInteractBench", Codec.BOOLEAN),
+                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.DefaultPartyInteractBench = value,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.DefaultPartyInteractBench).add()
+            .append(new KeyedCodec<Boolean>("DefaultPartyInteractChair", Codec.BOOLEAN),
+                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.DefaultPartyInteractChair = value,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.DefaultPartyInteractChair).add()
+            .append(new KeyedCodec<Boolean>("DefaultPartyInteractPortal", Codec.BOOLEAN),
+                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.DefaultPartyInteractPortal = value,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.DefaultPartyInteractPortal).add()
+
             .append(new KeyedCodec<Boolean>("AllowPartyPVPSettingChanges", Codec.BOOLEAN),
                     (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.AllowPartyPVPSetting = value,
                     (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.AllowPartyPVPSetting).add()
@@ -43,9 +53,25 @@ public class SimpleClaimsConfig {
             .append(new KeyedCodec<Boolean>("AllowPartyInteractBlockSettingChanges", Codec.BOOLEAN),
                     (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.AllowPartyInteractBlockSetting = value,
                     (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.AllowPartyInteractBlockSetting).add()
-            .append(new KeyedCodec<Boolean>("AllowPartyAllowEntrySetting", Codec.BOOLEAN),
+            .append(new KeyedCodec<Boolean>("AllowPartyAllowEntrySettingChanges", Codec.BOOLEAN),
                     (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.AllowPartyAllowEntrySetting = value,
                     (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.AllowPartyAllowEntrySetting).add()
+            .append(new KeyedCodec<Boolean>("AllowPartyInteractChestSettingChanges", Codec.BOOLEAN),
+                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.AllowPartyInteractChestSetting = value,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.AllowPartyInteractChestSetting).add()
+            .append(new KeyedCodec<Boolean>("AllowPartyInteractDoorSettingChanges", Codec.BOOLEAN),
+                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.AllowPartyInteractDoorSetting = value,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.AllowPartyInteractDoorSetting).add()
+            .append(new KeyedCodec<Boolean>("AllowPartyInteractBechSettingChanges", Codec.BOOLEAN),
+                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.AllowPartyInteractBenchSetting = value,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.AllowPartyInteractBenchSetting).add()
+            .append(new KeyedCodec<Boolean>("AllowPartyInteractChairSettingChanges", Codec.BOOLEAN),
+                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.AllowPartyInteractChairSetting = value,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.AllowPartyInteractChairSetting).add()
+            .append(new KeyedCodec<Boolean>("AllowPartyInteractPortalSettingChanges", Codec.BOOLEAN),
+                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.AllowPartyInteractPortalSetting = value,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.AllowPartyInteractPortalSetting).add()
+
             .append(new KeyedCodec<String[]>("WorldClaimBlacklist", Codec.STRING_ARRAY),
                     (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.WorldNameBlacklistForClaiming = value,
                     (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.WorldNameBlacklistForClaiming).add()
@@ -61,6 +87,12 @@ public class SimpleClaimsConfig {
             .append(new KeyedCodec<Boolean>("EnableParticleBorders", Codec.BOOLEAN),
                     (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.EnableParticleBorders = value,
                     (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.EnableParticleBorders).add()
+            .append(new KeyedCodec<Boolean>("ForceSimpleClaimsChunkWorldMap", Codec.BOOLEAN),
+                    (simpleClaimsConfig, aDouble, extraInfo) -> simpleClaimsConfig.ForceSimpleClaimsChunkWorldMap = aDouble,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.ForceSimpleClaimsChunkWorldMap).add()
+            .append(new KeyedCodec<Boolean>("CreativeModeBypassProtection", Codec.BOOLEAN),
+                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.CreativeModeBypassProtection = value,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.CreativeModeBypassProtection).add()
             .build();
 
     private int DefaultPartyClaimsAmount = 25;
@@ -69,11 +101,23 @@ public class SimpleClaimsConfig {
     private boolean DefaultPartyBlockInteractEnabled = false;
     private boolean DefaultPartyPVPEnabled = false;
     private boolean DefaultPartyAllowEntry = true;
+    private boolean DefaultPartyInteractChest = false;
+    private boolean DefaultPartyInteractDoor = false;
+    private boolean DefaultPartyInteractBench = false;
+    private boolean DefaultPartyInteractChair = false;
+    private boolean DefaultPartyInteractPortal = false;
+
     private boolean AllowPartyPVPSetting = true;
     private boolean AllowPartyPlaceBlockSetting = true;
     private boolean AllowPartyBreakBlockSetting = true;
     private boolean AllowPartyInteractBlockSetting = true;
     private boolean AllowPartyAllowEntrySetting = true;
+    private boolean AllowPartyInteractChestSetting = true;
+    private boolean AllowPartyInteractDoorSetting = true;
+    private boolean AllowPartyInteractBenchSetting = true;
+    private boolean AllowPartyInteractChairSetting = true;
+    private boolean AllowPartyInteractPortalSetting = true;
+
     private String[] WorldNameBlacklistForClaiming = new String[0];
     private String TitleTopClaimTitleText = "Simple Claims";
     private String[] FullWorldProtection = new String[0];
@@ -153,6 +197,46 @@ public class SimpleClaimsConfig {
 
     public boolean isEnableAlloyEntryTesting() {
         return EnableAlloyEntryTesting;
+    }
+
+    public boolean isDefaultPartyInteractChest() {
+        return DefaultPartyInteractChest;
+    }
+
+    public boolean isDefaultPartyInteractDoor() {
+        return DefaultPartyInteractDoor;
+    }
+
+    public boolean isDefaultPartyInteractBench() {
+        return DefaultPartyInteractBench;
+    }
+
+    public boolean isDefaultPartyInteractChair() {
+        return DefaultPartyInteractChair;
+    }
+
+    public boolean isAllowPartyInteractChestSetting() {
+        return AllowPartyInteractChestSetting;
+    }
+
+    public boolean isAllowPartyInteractDoorSetting() {
+        return AllowPartyInteractDoorSetting;
+    }
+
+    public boolean isAllowPartyInteractBenchSetting() {
+        return AllowPartyInteractBenchSetting;
+    }
+
+    public boolean isAllowPartyInteractChairSetting() {
+        return AllowPartyInteractChairSetting;
+    }
+
+    public boolean isDefaultPartyInteractPortal() {
+        return DefaultPartyInteractPortal;
+    }
+
+    public boolean isAllowPartyInteractPortalSetting() {
+        return AllowPartyInteractPortalSetting;
     }
 
     public boolean isEnableParticleBorders() {
