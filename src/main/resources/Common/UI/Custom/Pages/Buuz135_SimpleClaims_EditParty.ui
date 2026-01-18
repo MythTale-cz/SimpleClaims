@@ -275,7 +275,7 @@ $C.@PageOverlay {
           }
           Group #Members {
             LayoutMode: TopScrolling;
-            Anchor: (Bottom: 10, Height: 285);
+            Anchor: (Bottom: 10, Height: 250);
             ScrollbarStyle: $C.@DefaultScrollbarStyle;
 
             Group #MemberEntries {
