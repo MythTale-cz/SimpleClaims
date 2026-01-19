@@ -47,6 +47,10 @@ public class PlayerNameTracker {
         names.put(uuid, new PlayerName(uuid, name));
     }
 
+    public HashMap<UUID, PlayerName> getNamesMap() {
+        return names;
+    }
+
     public static class PlayerName{
 
         public static final BuilderCodec<PlayerName> CODEC = BuilderCodec.builder(PlayerName.class, PlayerName::new)

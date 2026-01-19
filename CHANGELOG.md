@@ -1,3 +1,9 @@
+# 1.0.17
+
+* Converted data storage to SQLite for better stability. BACKUP YOUR DATA! SimpleClaims will automatically migrate your
+  data to the new
+  format. All the data is stored inside the Universe folder. Closes #91, closes #86
+
 # 1.0.16
 
 * Fixed save button going off screen

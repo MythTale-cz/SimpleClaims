@@ -81,8 +81,7 @@ public class Main extends JavaPlugin {
         this.getEventRegistry().registerGlobal(AddPlayerToWorldEvent.class, (event) -> {
             var player = event.getHolder().getComponent(Player.getComponentType());
             var playerRef = event.getHolder().getComponent(PlayerRef.getComponentType());
-            ClaimManager.getInstance().getPlayerNameTracker().setPlayerName(playerRef.getUuid(), player.getDisplayName());
-            ClaimManager.getInstance().markDirty();
+            ClaimManager.getInstance().setPlayerName(playerRef.getUuid(), player.getDisplayName());
         });
 
     }
