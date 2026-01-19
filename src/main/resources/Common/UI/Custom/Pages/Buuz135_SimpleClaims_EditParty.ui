@@ -91,7 +91,7 @@ $C.@PageOverlay {
           $C.@TextButton #SeeClaimedChunksButton {
               Anchor: (Height: 22, Left: 10, Top: 9);
               Padding: ();
-              Text: "  VIEW  ";
+              Text: "ZOBRAZIT";
               Style: @CustomStyle;
             }
         }

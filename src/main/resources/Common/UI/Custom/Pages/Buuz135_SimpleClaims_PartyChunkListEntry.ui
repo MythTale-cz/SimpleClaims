@@ -14,7 +14,7 @@ Group {
     );
     Anchor: (Left: 10, Vertical: 0);
     Padding: (Right: 5);
-    Text: "World: ";
+    Text: "Svet: ";
   }
 
   Label #ChunkWorldName {
