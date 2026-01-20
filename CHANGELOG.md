@@ -6,6 +6,7 @@
 * Added a config option to disband parties for inactivity, all the players need to be inactive for the party to be
   disbanded, closes #74
 * Added extra aliases to commands
+* Replaced bucket interactions with custom ones to allow claim protection, closes #19
 
 # 1.0.18
 

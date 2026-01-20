@@ -5,6 +5,8 @@ import com.buuz135.simpleclaims.commands.SimpleClaimProtectCommand;
 import com.buuz135.simpleclaims.commands.SimpleClaimsPartyCommand;
 import com.buuz135.simpleclaims.config.SimpleClaimsConfig;
 import com.buuz135.simpleclaims.interactions.ClaimCycleBlockGroupInteraction;
+import com.buuz135.simpleclaims.interactions.ClaimPickupBucketInteraction;
+import com.buuz135.simpleclaims.interactions.ClaimPlaceBucketInteraction;
 import com.buuz135.simpleclaims.interactions.ClaimUseBlockInteraction;
 import com.buuz135.simpleclaims.map.SimpleClaimsWorldMapProvider;
 import com.buuz135.simpleclaims.systems.events.*;
@@ -88,6 +90,8 @@ public class Main extends JavaPlugin {
         var interaction = getCodecRegistry(Interaction.CODEC);
         interaction.register("UseBlock", ClaimUseBlockInteraction.class, ClaimUseBlockInteraction.CUSTOM_CODEC);
         interaction.register("CycleBlockGroup", ClaimCycleBlockGroupInteraction.class, ClaimCycleBlockGroupInteraction.CUSTOM_CODEC);
+        interaction.register("PlaceFluid", ClaimPlaceBucketInteraction.class, ClaimPlaceBucketInteraction.CUSTOM_CODEC);
+        interaction.register("RefillContainer", ClaimPickupBucketInteraction.class, ClaimPickupBucketInteraction.CUSTOM_CODEC);
 
         partyInactivityTickingSystem = new PartyInactivityThread();
         partyInactivityTickingSystem.start();
