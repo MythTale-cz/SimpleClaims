@@ -257,7 +257,7 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
         for (PartyInvite value : ClaimManager.getInstance().getPartyInvites().values()) {
             uiCommandBuilder.append("#MemberEntries", "Pages/Buuz135_SimpleClaims_PartyMemberListEntry.ui");
             uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberName.Text", ClaimManager.getInstance().getPlayerNameTracker().getPlayerName(value.recipient()));
-            uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberRole.Text", "Pending Invite");
+            uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberRole.Text", "Pozvánky");
 
             uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberRole.Background.Color", "#cac85383");
             uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberRole.OutlineColor", "#cac853de");
@@ -267,7 +267,7 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
             } else {
                 //uiEventBuilder.addEventBinding(CustomUIEventBindingType.SlotMouseExited, "#Members[" + i + "] #RemoveMemberButton", EventData.of("RemoveButtonAction", "Left:" + i), false);
                 if (this.requestingConfirmation == i) {
-                    uiCommandBuilder.set("#MemberEntries[" + i + "] #RemoveMemberButton.Text", "Are you sure?");
+                    uiCommandBuilder.set("#MemberEntries[" + i + "] #RemoveMemberButton.Text", "Jsi si jist?");
                     uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#MemberEntries[" + i + "] #RemoveMemberButton", EventData.of("RemoveButtonAction", "DeleteInvite:" + value.recipient().toString()), false);
                     uiEventBuilder.addEventBinding(CustomUIEventBindingType.MouseExited, "#MemberEntries[" + i + "] #RemoveMemberButton", EventData.of("RemoveButtonAction", "Click:-1"), false);
                 } else {
@@ -291,7 +291,7 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
             } else {
                 //uiEventBuilder.addEventBinding(CustomUIEventBindingType.SlotMouseExited, "#Members[" + i + "] #RemoveMemberButton", EventData.of("RemoveButtonAction", "Left:" + i), false);
                 if (this.requestingConfirmation == i) {
-                    uiCommandBuilder.set("#MemberEntries[" + i + "] #RemoveMemberButton.Text", "Are you sure?");
+                    uiCommandBuilder.set("#MemberEntries[" + i + "] #RemoveMemberButton.Text", "Jsi si jist?");
                     uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#MemberEntries[" + i + "] #RemoveMemberButton", EventData.of("RemoveButtonAction", "DeleteAllyPlayer:" + uuid.toString()), false);
                     uiEventBuilder.addEventBinding(CustomUIEventBindingType.MouseExited, "#MemberEntries[" + i + "] #RemoveMemberButton", EventData.of("RemoveButtonAction", "Click:-1"), false);
                 } else {
@@ -309,7 +309,7 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
                 name = ClaimManager.getInstance().getParties().get(uuid.toString()).getName();
             }
             uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberName.Text", name);
-            uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberRole.Text", "Party Ally");
+            uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberRole.Text", "Party Allies");
 
             uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberRole.Background.Color", "#5ab44e83");
             uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberRole.OutlineColor", "#5ab44ede");
@@ -319,7 +319,7 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
             } else {
                 //uiEventBuilder.addEventBinding(CustomUIEventBindingType.SlotMouseExited, "#Members[" + i + "] #RemoveMemberButton", EventData.of("RemoveButtonAction", "Left:" + i), false);
                 if (this.requestingConfirmation == i) {
-                    uiCommandBuilder.set("#MemberEntries[" + i + "] #RemoveMemberButton.Text", "Are you sure?");
+                    uiCommandBuilder.set("#MemberEntries[" + i + "] #RemoveMemberButton.Text", "Jsi si jist?");
                     uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#MemberEntries[" + i + "] #RemoveMemberButton", EventData.of("RemoveButtonAction", "DeleteAllyParty:" + uuid.toString()), false);
                     uiEventBuilder.addEventBinding(CustomUIEventBindingType.MouseExited, "#MemberEntries[" + i + "] #RemoveMemberButton", EventData.of("RemoveButtonAction", "Click:-1"), false);
                 } else {
