@@ -27,7 +27,7 @@ public class OpChunkGuiCommand extends AbstractAsyncCommand {
 
     public OpChunkGuiCommand() {
         super("admin-chunk", "Opens the chunk claim gui in op mode to claim chunks using the selected admin party");
-        this.setPermissionGroup(GameMode.Creative);
+        this.requirePermission(CommandMessages.ADMIN_PERM + "admin-chunk");
     }
 
     @NonNullDecl
@@ -42,10 +42,6 @@ public class OpChunkGuiCommand extends AbstractAsyncCommand {
                 return CompletableFuture.runAsync(() -> {
                     PlayerRef playerRef = ref.getStore().getComponent(ref, PlayerRef.getComponentType());
                     if (playerRef == null) return;
-                    if (!ClaimManager.getInstance().canClaimInDimension(world)) {
-                        player.sendMessage(CommandMessages.CANT_CLAIM_IN_THIS_DIMENSION);
-                        return;
-                    }
                     var position = store.getComponent(ref, TransformComponent.getComponentType());
                     player.getPageManager().openCustomPage(ref, store, new ChunkInfoGui(playerRef, player.getWorld().getName(), ChunkUtil.chunkCoordinate(position.getPosition().getX()), ChunkUtil.chunkCoordinate(position.getPosition().getZ()), true));
                 }, world);

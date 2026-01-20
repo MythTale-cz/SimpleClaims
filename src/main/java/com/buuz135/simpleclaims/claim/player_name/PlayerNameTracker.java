@@ -7,6 +7,7 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -34,8 +35,20 @@ public class PlayerNameTracker {
         return "Unknown";
     }
 
-    public void setPlayerName(UUID uuid, String name){
-        names.put(uuid, new PlayerName(uuid, name));
+    @Nullable
+    public UUID getPlayerUUID(String name) {
+        for (UUID uuid : names.keySet()) {
+            if (names.get(uuid).name.equalsIgnoreCase(name)) return uuid;
+        }
+        return null;
+    }
+
+    public void setPlayerName(UUID uuid, String name, long lastSeen) {
+        names.put(uuid, new PlayerName(uuid, name, lastSeen));
+    }
+
+    public HashMap<UUID, PlayerName> getNamesMap() {
+        return names;
     }
 
     public static class PlayerName{
@@ -47,20 +60,25 @@ public class PlayerNameTracker {
                 .append(new KeyedCodec<>("Name", Codec.STRING),
                         (modifiedTracking, string, extraInfo) -> modifiedTracking.name = string,
                         (modifiedTracking, extraInfo) -> modifiedTracking.name).add()
+                .append(new KeyedCodec<>("LastSeen", Codec.LONG),
+                        (modifiedTracking, aLong, extraInfo) -> modifiedTracking.lastSeen = aLong,
+                        (modifiedTracking, extraInfo) -> modifiedTracking.lastSeen).add()
                 .build();
 
         public static ArrayCodec<PlayerName> CODEC_ARRAY = new ArrayCodec<>(CODEC, PlayerName[]::new);
 
         private UUID uuid;
         private String name;
+        private long lastSeen;
 
-        public PlayerName(UUID uuid, String name) {
+        public PlayerName(UUID uuid, String name, long lastSeen) {
             this.uuid = uuid;
             this.name = name;
+            this.lastSeen = lastSeen;
         }
 
         public PlayerName() {
-            this(UUID.randomUUID(), "");
+            this(UUID.randomUUID(), "", 0);
         }
 
         public UUID getUuid() {
@@ -69,6 +87,10 @@ public class PlayerNameTracker {
 
         public String getName() {
             return name;
+        }
+
+        public long getLastSeen() {
+            return lastSeen;
         }
     }
 }

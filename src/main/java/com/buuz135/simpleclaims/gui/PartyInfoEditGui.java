@@ -7,6 +7,8 @@ import com.buuz135.simpleclaims.claim.party.PartyOverride;
 import com.buuz135.simpleclaims.claim.party.PartyOverrides;
 import com.buuz135.simpleclaims.Main;
 import com.buuz135.simpleclaims.commands.CommandMessages;
+import com.buuz135.simpleclaims.gui.subscreens.ChunkListGui;
+import com.buuz135.simpleclaims.gui.subscreens.InteractGui;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -14,6 +16,8 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
 import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
+import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.pages.InteractiveCustomUIPage;
 import com.hypixel.hytale.server.core.ui.DropdownEntryInfo;
 import com.hypixel.hytale.server.core.ui.LocalizableString;
@@ -52,8 +56,8 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
     @Override
     public void handleDataEvent(@NonNullDecl Ref<EntityStore> ref, @NonNullDecl Store<EntityStore> store, @NonNullDecl PartyInfoData data) {
         super.handleDataEvent(ref, store, data);
-        var player = store.getComponent(ref, PlayerRef.getComponentType());
-        var playerCanModify = this.info.isOwner(player.getUuid()) || this.isOpEdit;
+        var player = store.getComponent(ref, Player.getComponentType());
+        var playerCanModify = this.info.isOwner(playerRef.getUuid()) || this.isOpEdit;
         if (!playerCanModify) {
             UICommandBuilder commandBuilder = new UICommandBuilder();
             UIEventBuilder eventBuilder = new UIEventBuilder();
@@ -126,6 +130,12 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
             if (action.equals("PVPSetting")) {
                 this.info.setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_PVP, new PartyOverride.PartyOverrideValue("bool", !this.info.isPVPEnabled())));
             }
+            if (action.equals("AllowEntrySetting")) {
+                this.info.setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_ALLOW_ENTRY, new PartyOverride.PartyOverrideValue("bool", !this.info.isAllowEntryEnabled())));
+            }
+            if (action.equals("FriendlyFireSetting")) {
+                this.info.setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_FRIENDLY_FIRE, new PartyOverride.PartyOverrideValue("bool", !this.info.isFriendlyFireEnabled())));
+            }
             UICommandBuilder commandBuilder = new UICommandBuilder();
             UIEventBuilder eventBuilder = new UIEventBuilder();
             this.build(ref, commandBuilder, eventBuilder, store);
@@ -147,21 +157,33 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
         }
         if (data.button != null) {
             if (data.button.equals("Invite") && this.inviteDropdown != null) {
-                if (!this.info.isMember(UUID.fromString(this.inviteDropdown))) {
-                    var invited = Universe.get().getPlayer(UUID.fromString(this.inviteDropdown));
-                    if (invited != null) {
-                        ClaimManager.getInstance().invitePlayerToParty(this.playerRef, this.info, invited);
-                        ClaimManager.getInstance().markDirty();
-                        invited.sendMessage(CommandMessages.PARTY_INVITE_RECEIVED.param("party_name", this.info.getName()).param("username", this.playerRef.getUsername()));
-                        UICommandBuilder commandBuilder = new UICommandBuilder();
-                        UIEventBuilder eventBuilder = new UIEventBuilder();
-                        this.build(ref, commandBuilder, eventBuilder, store);
-                        this.sendUpdate(commandBuilder, eventBuilder, true);
+                if (player.hasPermission(CommandMessages.BASE_PERM + "create-invite")) {
+                    if (Main.CONFIG.get().getMaxPartyMembers() != -1 && (this.info.getMembers().length + ClaimManager.getInstance().getPartyInvites().values().stream().filter(partyInvite -> partyInvite.party().equals(this.info.getId())).count()) >= Main.CONFIG.get().getMaxPartyMembers()) {
+                        player.sendMessage(CommandMessages.PARTY_MEMBER_LIMIT_REACHED);
                         return;
                     }
+                    if (!this.info.isMember(UUID.fromString(this.inviteDropdown))) {
+                        var invited = Universe.get().getPlayer(UUID.fromString(this.inviteDropdown));
+                        if (invited != null) {
+                            ClaimManager.getInstance().invitePlayerToParty(invited, this.info, this.playerRef);
+                            ClaimManager.getInstance().markDirty();
+                            invited.sendMessage(CommandMessages.PARTY_INVITE_RECEIVED.param("party_name", this.info.getName()).param("username", this.playerRef.getUsername()));
+                            UICommandBuilder commandBuilder = new UICommandBuilder();
+                            UIEventBuilder eventBuilder = new UIEventBuilder();
+                            this.build(ref, commandBuilder, eventBuilder, store);
+                            this.sendUpdate(commandBuilder, eventBuilder, true);
+                            return;
+                        }
+                    }
+                } else {
+                    playerRef.sendMessage(Message.translation("commands.parsing.error.noPermissionForCommand"));
                 }
             }
             if (data.button.equals("Allies") && this.alliesDropdown != null) {
+                if (Main.CONFIG.get().getMaxPartyAllies() != -1 && (this.info.getPartyAllies().size() + this.info.getPlayerAllies().size()) >= Main.CONFIG.get().getMaxPartyAllies()) {
+                    player.sendMessage(CommandMessages.PARTY_ALLY_LIMIT_REACHED);
+                    return;
+                }
                 var invited = Universe.get().getPlayer(UUID.fromString(this.alliesDropdown));
                 if (invited != null) { //IS Player
                     this.info.getPlayerAllies().add(invited.getUuid());
@@ -184,6 +206,14 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
                     }
                 }
             }
+            if (data.button.equals("SeeClaimedChunks")) {
+                player.getPageManager().openCustomPage(ref, store, new ChunkListGui(playerRef, this.info, this, this.isOpEdit));
+                return;
+            }
+            if (data.button.equals("EditInteract")) {
+                player.getPageManager().openCustomPage(ref, store, new InteractGui(playerRef, this.info, this, this.isOpEdit));
+                return;
+            }
         }
         this.sendUpdate();
     }
@@ -199,6 +229,8 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
         uiCommandBuilder.set("#PartyInfo #PartyDescriptionField.Value", this.info.getDescription());
         uiCommandBuilder.set("#PartyInfo #PartyDescriptionField.IsReadOnly", !playerCanModify);
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#PartyDescriptionField", EventData.of("@Description", "#PartyDescriptionField.Value"), false);
+        uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#SeeClaimedChunksButton", EventData.of("Button", "SeeClaimedChunks"), false);
+
         int i = 0;
         for (; i < this.info.getMembers().length; i++) {
             uiCommandBuilder.append("#MemberEntries", "Pages/Buuz135_SimpleClaims_PartyMemberListEntry.ui");
@@ -302,19 +334,34 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#CancelButton", EventData.of("Cancel", "true"), false);
 
         uiCommandBuilder.set("#PlaceBlocksSetting #CheckBox.Value", this.info.isBlockPlaceEnabled());
-        uiCommandBuilder.set("#PlaceBlocksSetting #CheckBox.Disabled", !playerCanModify);
+        if (!isOpEdit)
+            uiCommandBuilder.set("#PlaceBlocksSetting #CheckBox.Disabled", !playerCanModify || !Main.CONFIG.get().isAllowPartyBreakBlockSetting());
         uiCommandBuilder.set("#BreakBlocksSetting #CheckBox.Value", this.info.isBlockBreakEnabled());
-        uiCommandBuilder.set("#BreakBlocksSetting #CheckBox.Disabled", !playerCanModify);
+        if (!isOpEdit)
+            uiCommandBuilder.set("#BreakBlocksSetting #CheckBox.Disabled", !playerCanModify || !Main.CONFIG.get().isAllowPartyPlaceBlockSetting());
         uiCommandBuilder.set("#InteractBlocksSetting #CheckBox.Value",this.info.isBlockInteractEnabled());
-        uiCommandBuilder.set("#InteractBlocksSetting #CheckBox.Disabled", !playerCanModify);
+        if (!isOpEdit) {
+            uiCommandBuilder.set("#InteractBlocksSetting #CheckBox.Disabled", !playerCanModify || !Main.CONFIG.get().isAllowPartyInteractBlockSetting());
+            uiCommandBuilder.set("#EditInteractButton.Disabled", !playerCanModify || !Main.CONFIG.get().isAllowPartyInteractBlockSetting());
+        }
         uiCommandBuilder.set("#PVPSetting #CheckBox.Value", this.info.isPVPEnabled());
-        uiCommandBuilder.set("#PVPSetting #CheckBox.Disabled", !playerCanModify || !Main.CONFIG.get().isAllowPartyPVPSetting());
+        if (!isOpEdit)
+            uiCommandBuilder.set("#PVPSetting #CheckBox.Disabled", !playerCanModify || !Main.CONFIG.get().isAllowPartyPVPSetting());
+        uiCommandBuilder.set("#AllowEntrySetting #CheckBox.Value", this.info.isAllowEntryEnabled());
+        uiCommandBuilder.set("#AllowEntrySetting.Visible", Main.CONFIG.get().isEnableAlloyEntryTesting());
+        if (!isOpEdit)
+            uiCommandBuilder.set("#AllowEntrySetting #CheckBox.Disabled", !playerCanModify || !Main.CONFIG.get().isAllowPartyAllowEntrySetting());
+        uiCommandBuilder.set("#FriendlyFireSetting #CheckBox.Value", this.info.isFriendlyFireEnabled());
+        if (!isOpEdit)
+            uiCommandBuilder.set("#FriendlyFireSetting #CheckBox.Disabled", !playerCanModify || !Main.CONFIG.get().isAllowPartyFriendlyFireSetting());
 
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#PlaceBlocksSetting #CheckBox", EventData.of("RemoveButtonAction", "PlaceBlocksSetting:0"), false);
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#BreakBlocksSetting #CheckBox", EventData.of("RemoveButtonAction", "BreakBlocksSetting:0"), false);
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#InteractBlocksSetting #CheckBox", EventData.of("RemoveButtonAction", "InteractBlocksSetting:0"), false);
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#PVPSetting #CheckBox", EventData.of("RemoveButtonAction", "PVPSetting:0"), false);
-
+        uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#AllowEntrySetting #CheckBox", EventData.of("RemoveButtonAction", "AllowEntrySetting:0"), false);
+        uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#FriendlyFireSetting #CheckBox", EventData.of("RemoveButtonAction", "FriendlyFireSetting:0"), false);
+        uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#EditInteractButton", EventData.of("Button", "EditInteract"), false);
 
         uiCommandBuilder.set("#ClaimColorPickerGroup #ClaimColorPicker.Value", String.format("#%06X", (0xFFFFFF & this.info.getColor())));
         //uiCommandBuilder.set("#ClaimColorPickerGroup #ClaimColorPicker.IsReadOnly", !playerCanModify);
@@ -325,8 +372,10 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#ClaimColorPicker", EventData.of("@ClaimColor", "#ClaimColorPicker.Value"), false);
 
         //Invite Dropdowns
-        var players = new ArrayList<>(Universe.get().getPlayers().stream().map(playerRef1 -> new DropdownEntryInfo(LocalizableString.fromString(playerRef1.getUsername()), playerRef1.getUuid().toString())).toList());
+        var players = new ArrayList<>(Universe.get().getPlayers().stream().filter(playerRef1 -> ClaimManager.getInstance().getPartyFromPlayer(playerRef1.getUuid()) == null)
+                .map(playerRef1 -> new DropdownEntryInfo(LocalizableString.fromString(playerRef1.getUsername()), playerRef1.getUuid().toString())).toList());
         uiCommandBuilder.set("#InviteDropdown.Entries", players);
+        players = new ArrayList<>(Universe.get().getPlayers().stream().map(playerRef1 -> new DropdownEntryInfo(LocalizableString.fromString(playerRef1.getUsername()), playerRef1.getUuid().toString())).toList());
         var parties = ClaimManager.getInstance().getParties().values().stream().map(party -> new DropdownEntryInfo(LocalizableString.fromString("[PAR] " + party.getName()), party.getId().toString())).toList();
         players.addAll(parties);
         uiCommandBuilder.set("#AlliesDropdown.Entries", players);

@@ -42,10 +42,21 @@ public class CustomDamageEventSystem extends DamageEventSystem {
                 if (attackerPlayerComponent != null) { //The source is a player
                     // && !ClaimManager.getInstance().isAllowedToInteract(playerRef.getUuid(), player.getWorld().getName(), (int) transform.getX(), (int) transform.getZ(), PartyInfo::isPVPEnabled)) {
                     var chunk = ClaimManager.getInstance().getChunkRawCoords(player.getWorld().getName(), (int) transform.getX(), (int) transform.getZ());
-                    if (chunk == null) return;
-                    var partyInfo = ClaimManager.getInstance().getPartyById(chunk.getPartyOwner());
-                    if (partyInfo != null && !partyInfo.isPVPEnabled()) {
-                        damage.setCancelled(true);
+                    if (chunk != null) {
+                        var partyInfo = ClaimManager.getInstance().getPartyById(chunk.getPartyOwner());
+                        if (partyInfo != null && !partyInfo.isPVPEnabled()) {
+                            damage.setCancelled(true);
+                        }
+                    }
+                    if (!damage.isCancelled()) {
+                        PlayerRef attackerPlayerRef = (PlayerRef) commandBuffer.getComponent(attackerRef, PlayerRef.getComponentType());
+                        if (attackerPlayerRef != null) {
+                            var attackerParty = ClaimManager.getInstance().getPartyFromPlayer(attackerPlayerRef.getUuid());
+                            var victimParty = ClaimManager.getInstance().getPartyFromPlayer(playerRef.getUuid());
+                            if (attackerParty != null && victimParty != null && attackerParty.getId().equals(victimParty.getId()) && !attackerParty.isFriendlyFireEnabled()) {
+                                damage.setCancelled(true);
+                            }
+                        }
                     }
                 }
             }

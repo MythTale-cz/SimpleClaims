@@ -1,5 +1,6 @@
 package com.buuz135.simpleclaims.commands.subcommand.party;
 
+import com.buuz135.simpleclaims.Main;
 import com.buuz135.simpleclaims.claim.ClaimManager;
 import com.buuz135.simpleclaims.commands.CommandMessages;
 import com.buuz135.simpleclaims.gui.PartyInfoEditGui;
@@ -27,8 +28,8 @@ public class PartyInviteCommand extends AbstractAsyncCommand {
 
     public PartyInviteCommand() {
         super("invite", "Invites a player to your party");
-        this.setPermissionGroup(GameMode.Adventure);
         this.name = this.withRequiredArg("player", "The player name", ArgTypes.PLAYER_REF);
+        this.requirePermission(CommandMessages.BASE_PERM + "create-invite");
     }
 
     @NonNullDecl
@@ -61,6 +62,10 @@ public class PartyInviteCommand extends AbstractAsyncCommand {
                         }
                         if (party.isOwnerOrMember(invitedPlayer.getUuid())) {
                             player.sendMessage(CommandMessages.PARTY_INVITE_SELF);
+                            return;
+                        }
+                        if (Main.CONFIG.get().getMaxPartyMembers() != -1 && (party.getMembers().length + ClaimManager.getInstance().getPartyInvites().values().stream().filter(partyInvite -> partyInvite.party().equals(party.getId())).count()) >= Main.CONFIG.get().getMaxPartyMembers()) {
+                            player.sendMessage(CommandMessages.PARTY_MEMBER_LIMIT_REACHED);
                             return;
                         }
                         ClaimManager.getInstance().invitePlayerToParty(invintedPlayerPlayerRef, party, playerRef);

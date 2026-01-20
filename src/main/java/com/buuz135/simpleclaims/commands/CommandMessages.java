@@ -6,6 +6,9 @@ import java.awt.*;
 
 public class CommandMessages {
 
+    public static String BASE_PERM = "simpleclaims.";
+    public static String ADMIN_PERM = "simpleclaims.admin.";
+
     public static final Message NOT_IN_A_PARTY = Message.translation("commands.errors.simpleclaims.playerNotInParty").color(Color.RED).bold(true);
     public static final Message IN_A_PARTY = Message.translation("commands.errors.simpleclaims.playerInParty").color(Color.RED).bold(true);
 
@@ -43,4 +46,6 @@ public class CommandMessages {
 
     public static final Message ENABLED_OVERRIDE = Message.translation("commands.simpleclaims.enabledOverride").color(Color.GREEN).bold(true);
     public static final Message DISABLED_OVERRIDE = Message.translation("commands.simpleclaims.disabledOverride").color(Color.GREEN).bold(true);
+    public static final Message PARTY_MEMBER_LIMIT_REACHED = Message.translation("commands.errors.simpleclaims.partyMemberLimitReached").color(Color.RED).bold(true);
+    public static final Message PARTY_ALLY_LIMIT_REACHED = Message.translation("commands.errors.simpleclaims.partyAllyLimitReached").color(Color.RED).bold(true);
 }

@@ -1,5 +1,6 @@
 package com.buuz135.simpleclaims.map;
 
+import com.buuz135.simpleclaims.Main;
 import com.buuz135.simpleclaims.claim.ClaimManager;
 import com.buuz135.simpleclaims.claim.chunk.ChunkInfo;
 import com.buuz135.simpleclaims.claim.party.PartyInfo;
@@ -294,20 +295,6 @@ public class CustomImageBuilder {
                 int blockId = this.blockSamples[sampleIndex];
                 getBlockColor(blockId, tint, this.outColor);
 
-                //CUSTOM CODE
-                if (partyInfo != null){
-                    var isBorder = false;
-                    var borderSize = 2;
-                    if ((ix <= borderSize && (nearbyChunks[3] == null || !nearbyChunks[3].getPartyOwner().equals(partyInfo.getId()))) //WEST
-                            || (ix >= this.image.width - borderSize - 1  && (nearbyChunks[2] == null || !nearbyChunks[2].getPartyOwner().equals(partyInfo.getId()))) //EAST
-                            || (iz <= borderSize && (nearbyChunks[1] == null || !nearbyChunks[1].getPartyOwner().equals(partyInfo.getId()))) // NORTH
-                            || (iz >= this.image.height - borderSize - 1 && (nearbyChunks[0] == null || !nearbyChunks[0].getPartyOwner().equals(partyInfo.getId())))) {
-                        isBorder = true;
-                    }
-                    getForceBlockColor(blockId, partyInfo.getColor(), this.outColor, isBorder);
-                }
-                //-
-
                 short north = this.neighborHeightSamples[sampleZ * (this.sampleWidth + 2) + sampleX + 1];
                 short south = this.neighborHeightSamples[(sampleZ + 2) * (this.sampleWidth + 2) + sampleX + 1];
                 short west = this.neighborHeightSamples[(sampleZ + 1) * (this.sampleWidth + 2) + sampleX];
@@ -327,8 +314,35 @@ public class CustomImageBuilder {
                     }
                 }
 
+                //CUSTOM CODE
+                if (partyInfo != null) {
+                    var isBorder = false;
+                    var borderSize = 2;
+                    if ((ix <= borderSize && (nearbyChunks[3] == null || !nearbyChunks[3].getPartyOwner().equals(partyInfo.getId()))) //WEST
+                            || (ix >= this.image.width - borderSize - 1 && (nearbyChunks[2] == null || !nearbyChunks[2].getPartyOwner().equals(partyInfo.getId()))) //EAST
+                            || (iz <= borderSize && (nearbyChunks[1] == null || !nearbyChunks[1].getPartyOwner().equals(partyInfo.getId()))) // NORTH
+                            || (iz >= this.image.height - borderSize - 1 && (nearbyChunks[0] == null || !nearbyChunks[0].getPartyOwner().equals(partyInfo.getId())))) {
+                        isBorder = true;
+                    }
+                    getForceBlockColor(blockId, partyInfo.getColor(), this.outColor, isBorder);
+                }
+                //-
+
                 this.populateImageData(iz * this.image.width + ix, sampleX, sampleZ, minBlockX, minBlockZ);
             }
+        }
+
+        if (partyInfo != null && Main.CONFIG.get().isRenderClaimNamesOnWorldMap()) {
+            String name = partyInfo.getName().toUpperCase();
+            drawText(this.image, 1, 1, name, new Color(0, 0, 0, 255).pack());
+            drawText(this.image, 1, 2, name, new Color(0, 0, 0, 255).pack());
+            drawText(this.image, 1, 3, name, new Color(0, 0, 0, 255).pack());
+            drawText(this.image, 2, 1, name, new Color(0, 0, 0, 255).pack());
+            drawText(this.image, 2, 3, name, new Color(0, 0, 0, 255).pack());
+            drawText(this.image, 3, 1, name, new Color(0, 0, 0, 255).pack());
+            drawText(this.image, 3, 2, name, new Color(0, 0, 0, 255).pack());
+            drawText(this.image, 3, 3, name, new Color(0, 0, 0, 255).pack());
+            drawText(this.image, 2, 2, name, new Color(255, 255, 255, 255).pack());
         }
 
         return this;
@@ -390,23 +404,17 @@ public class CustomImageBuilder {
         outColor.a = 255;
     }
 
-    private static void getForceBlockColor(int blockId, int biomeTintColor, @Nonnull CustomImageBuilder.Color outColor, boolean isBorder) {
-        int biomeTintR = biomeTintColor >> 16 & 255;
-        int biomeTintG = biomeTintColor >> 8 & 255;
-        int biomeTintB = biomeTintColor >> 0 & 255;
+    private static void getForceBlockColor(int blockId, int partyColor, @Nonnull CustomImageBuilder.Color outColor, boolean isBorder) {
+        int biomeTintR = partyColor >> 16 & 255;
+        int biomeTintG = partyColor >> 8 & 255;
+        int biomeTintB = partyColor >> 0 & 255;
 
+        float overlayAlpha = isBorder ? 0.75f : 0.4f;
 
-
-        float biomeTintMultiplier = isBorder ? 0.6f : 1f;
-
-
-
-        outColor.r = biomeTintR;
-        outColor.g = biomeTintG;
-        outColor.b = biomeTintB;
+        outColor.r = (int) (outColor.r * (1 - overlayAlpha) + biomeTintR * overlayAlpha);
+        outColor.g = (int) (outColor.g * (1 - overlayAlpha) + biomeTintG * overlayAlpha);
+        outColor.b = (int) (outColor.b * (1 - overlayAlpha) + biomeTintB * overlayAlpha);
         outColor.a = 255;
-
-        outColor.multiply(biomeTintMultiplier);
     }
 
     private static void getFluidColor(int fluidId, int environmentId, int fluidDepth, @Nonnull CustomImageBuilder.Color outColor) {
@@ -439,6 +447,109 @@ public class CustomImageBuilder {
         this.image.data[pixelIndex] = this.outColor.pack();
     }
 
+    private void drawText(MapImage image, int x, int y, String text, int color) {
+        for (int i = 0; i < text.length(); i++) {
+            drawChar(image, x + i * 4 + 4, y + 4, text.charAt(i), color);
+        }
+    }
+
+    private void drawChar(MapImage image, int x, int y, char c, int color) {
+        if (c == ' ') return;
+        byte[] glyph = getGlyph(c);
+        for (int gy = 0; gy < 5; gy++) {
+            for (int gx = 0; gx < 3; gx++) {
+                if (((glyph[gy] >> (2 - gx)) & 1) == 1) {
+                    int px = x + gx;
+                    int py = y + gy;
+                    if (px >= 0 && px < image.width && py >= 0 && py < image.height) {
+                        image.data[py * image.width + px] = color;
+                    }
+                }
+            }
+        }
+    }
+
+    private byte[] getGlyph(char c) {
+        switch (Character.toUpperCase(c)) {
+            case 'A':
+                return new byte[]{0b010, 0b101, 0b111, 0b101, 0b101};
+            case 'B':
+                return new byte[]{0b110, 0b101, 0b110, 0b101, 0b110};
+            case 'C':
+                return new byte[]{0b011, 0b100, 0b100, 0b100, 0b011};
+            case 'D':
+                return new byte[]{0b110, 0b101, 0b101, 0b101, 0b110};
+            case 'E':
+                return new byte[]{0b111, 0b100, 0b110, 0b100, 0b111};
+            case 'F':
+                return new byte[]{0b111, 0b100, 0b110, 0b100, 0b100};
+            case 'G':
+                return new byte[]{0b011, 0b100, 0b101, 0b101, 0b011};
+            case 'H':
+                return new byte[]{0b101, 0b101, 0b111, 0b101, 0b101};
+            case 'I':
+                return new byte[]{0b111, 0b010, 0b010, 0b010, 0b111};
+            case 'J':
+                return new byte[]{0b001, 0b001, 0b001, 0b101, 0b010};
+            case 'K':
+                return new byte[]{0b101, 0b101, 0b110, 0b101, 0b101};
+            case 'L':
+                return new byte[]{0b100, 0b100, 0b100, 0b100, 0b111};
+            case 'M':
+                return new byte[]{0b101, 0b111, 0b101, 0b101, 0b101};
+            case 'N':
+                return new byte[]{0b101, 0b111, 0b111, 0b101, 0b101};
+            case 'O':
+                return new byte[]{0b010, 0b101, 0b101, 0b101, 0b010};
+            case 'P':
+                return new byte[]{0b110, 0b101, 0b110, 0b100, 0b100};
+            case 'Q':
+                return new byte[]{0b010, 0b101, 0b101, 0b011, 0b001};
+            case 'R':
+                return new byte[]{0b110, 0b101, 0b110, 0b101, 0b101};
+            case 'S':
+                return new byte[]{0b011, 0b100, 0b010, 0b001, 0b110};
+            case 'T':
+                return new byte[]{0b111, 0b010, 0b010, 0b010, 0b010};
+            case 'U':
+                return new byte[]{0b101, 0b101, 0b101, 0b101, 0b111};
+            case 'V':
+                return new byte[]{0b101, 0b101, 0b101, 0b101, 0b010};
+            case 'W':
+                return new byte[]{0b101, 0b101, 0b101, 0b111, 0b101};
+            case 'X':
+                return new byte[]{0b101, 0b101, 0b010, 0b101, 0b101};
+            case 'Y':
+                return new byte[]{0b101, 0b101, 0b010, 0b010, 0b010};
+            case 'Z':
+                return new byte[]{0b111, 0b001, 0b010, 0b100, 0b111};
+            case ' ':
+                return new byte[]{0b000, 0b000, 0b000, 0b000, 0b000};
+            case '0':
+                return new byte[]{0b111, 0b101, 0b101, 0b101, 0b111};
+            case '1':
+                return new byte[]{0b010, 0b110, 0b010, 0b010, 0b111};
+            case '2':
+                return new byte[]{0b111, 0b001, 0b111, 0b100, 0b111};
+            case '3':
+                return new byte[]{0b111, 0b001, 0b111, 0b001, 0b111};
+            case '4':
+                return new byte[]{0b101, 0b101, 0b111, 0b001, 0b001};
+            case '5':
+                return new byte[]{0b111, 0b100, 0b111, 0b001, 0b111};
+            case '6':
+                return new byte[]{0b111, 0b100, 0b111, 0b101, 0b111};
+            case '7':
+                return new byte[]{0b111, 0b001, 0b001, 0b001, 0b001};
+            case '8':
+                return new byte[]{0b111, 0b101, 0b111, 0b101, 0b111};
+            case '9':
+                return new byte[]{0b111, 0b101, 0b111, 0b001, 0b001};
+            default:
+                return new byte[]{0b000, 0b000, 0b000, 0b000, 0b000};
+        }
+    }
+
     @Nonnull
     public static CompletableFuture<CustomImageBuilder> build(long index, int imageWidth, int imageHeight, World world) {
         return CompletableFuture.completedFuture(new CustomImageBuilder(index, imageWidth, imageHeight, world)).thenCompose(CustomImageBuilder::fetchChunk).thenCompose((builder) -> builder != null ? builder.sampleNeighborsSync() : CompletableFuture.completedFuture(null)).thenApplyAsync((builder) -> builder != null ? builder.generateImageAsync() : null);
@@ -449,6 +560,16 @@ public class CustomImageBuilder {
         public int g;
         public int b;
         public int a;
+
+        public Color(int r, int g, int b, int a) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.a = a;
+        }
+
+        public Color() {
+        }
 
         public int pack() {
             return (this.r & 255) << 24 | (this.g & 255) << 16 | (this.b & 255) << 8 | this.a & 255;
