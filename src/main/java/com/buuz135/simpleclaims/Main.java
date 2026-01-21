@@ -10,12 +10,9 @@ import com.buuz135.simpleclaims.interactions.ClaimPlaceBucketInteraction;
 import com.buuz135.simpleclaims.interactions.ClaimUseBlockInteraction;
 import com.buuz135.simpleclaims.map.SimpleClaimsWorldMapProvider;
 import com.buuz135.simpleclaims.systems.events.*;
-import com.buuz135.simpleclaims.systems.tick.ChunkBordersTickingSystem;
-import com.buuz135.simpleclaims.systems.tick.EntryTickingSystem;
+import com.buuz135.simpleclaims.systems.tick.*;
 import com.buuz135.simpleclaims.util.PartyInactivityThread;
-import com.buuz135.simpleclaims.systems.tick.TitleTickingSystem;
 
-import com.buuz135.simpleclaims.systems.tick.WorldMapUpdateTickingSystem;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
@@ -58,6 +55,7 @@ public class Main extends JavaPlugin {
         if (CONFIG.get().isEnableParticleBorders())
             this.getEntityStoreRegistry().registerSystem(new ChunkBordersTickingSystem());
         this.getEntityStoreRegistry().registerSystem(new CustomDamageEventSystem());
+        this.getEntityStoreRegistry().registerSystem(new QueuedCraftClaimFilterSystem());
         this.getChunkStoreRegistry().registerSystem(new WorldMapUpdateTickingSystem());
         this.getCommandRegistry().registerCommand(new SimpleClaimProtectCommand());
         this.getCommandRegistry().registerCommand(new SimpleClaimsPartyCommand());
