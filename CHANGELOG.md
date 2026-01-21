@@ -1,3 +1,23 @@
+# 1.0.19
+
+* Replaced interactions with custom ones to allow claim protection, closes #40
+* Fixed library conflicts, closes #98
+* Removed party ownership transfer when leaving a party, closes #100
+* Added a config option to disband parties for inactivity, all the players need to be inactive for the party to be
+  disbanded, closes #74
+* Added extra aliases to commands
+* Replaced bucket interactions with custom ones to allow claim protection, closes #19
+
+# 1.0.18
+
+* Fixed not shipping SQLite dependency, closes #94 closes #95
+
+# 1.0.17
+
+* Converted data storage to SQLite for better stability. BACKUP YOUR DATA! SimpleClaims will automatically migrate your
+  data to the new
+  format. All the data is stored inside the Universe folder. Closes #91, closes #86
+
 # 1.0.16
 
 * Fixed save button going off screen

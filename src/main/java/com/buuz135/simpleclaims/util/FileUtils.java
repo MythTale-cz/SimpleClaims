@@ -23,6 +23,7 @@ public class FileUtils {
     public static String CLAIM_PATH = MAIN_PATH + File.separator + "Claims.json";
     public static String NAMES_CACHE_PATH = MAIN_PATH + File.separator + "NameCache.json";
     public static String ADMIN_OVERRIDES_PATH = MAIN_PATH + File.separator + "AdminOverrides.json";
+    public static String DATABASE_PATH = MAIN_PATH + File.separator + "SimpleClaims.db";
 
     public static void ensureDirectory(String path){
         var file = new File(path);

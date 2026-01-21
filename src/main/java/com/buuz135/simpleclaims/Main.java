@@ -4,41 +4,40 @@ import com.buuz135.simpleclaims.claim.ClaimManager;
 import com.buuz135.simpleclaims.commands.SimpleClaimProtectCommand;
 import com.buuz135.simpleclaims.commands.SimpleClaimsPartyCommand;
 import com.buuz135.simpleclaims.config.SimpleClaimsConfig;
-import com.buuz135.simpleclaims.map.SimpleClaimsChunkWorldMap;
+import com.buuz135.simpleclaims.interactions.ClaimCycleBlockGroupInteraction;
+import com.buuz135.simpleclaims.interactions.ClaimPickupBucketInteraction;
+import com.buuz135.simpleclaims.interactions.ClaimPlaceBucketInteraction;
+import com.buuz135.simpleclaims.interactions.ClaimUseBlockInteraction;
 import com.buuz135.simpleclaims.map.SimpleClaimsWorldMapProvider;
 import com.buuz135.simpleclaims.systems.events.*;
 import com.buuz135.simpleclaims.systems.tick.ChunkBordersTickingSystem;
 import com.buuz135.simpleclaims.systems.tick.EntryTickingSystem;
+import com.buuz135.simpleclaims.util.PartyInactivityThread;
 import com.buuz135.simpleclaims.systems.tick.TitleTickingSystem;
 
 import com.buuz135.simpleclaims.systems.tick.WorldMapUpdateTickingSystem;
-import com.hypixel.hytale.builtin.teleport.TeleportPlugin;
-import com.hypixel.hytale.event.EventPriority;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
-import com.hypixel.hytale.server.core.event.events.player.PlayerInteractEvent;
-import com.hypixel.hytale.server.core.event.events.player.PlayerMouseButtonEvent;
+import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.events.AddWorldEvent;
-import com.hypixel.hytale.server.core.universe.world.events.RemoveWorldEvent;
 import com.hypixel.hytale.server.core.universe.world.worldmap.provider.IWorldMapProvider;
 import com.hypixel.hytale.server.core.universe.world.worldmap.provider.chunk.WorldGenWorldMapProvider;
 import com.hypixel.hytale.server.core.util.Config;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.logging.Level;
 
 
 public class Main extends JavaPlugin {
 
     public static Config<SimpleClaimsConfig> CONFIG;
+
+    private PartyInactivityThread partyInactivityTickingSystem;
 
     public Main(@NonNullDecl JavaPluginInit init) {
         super(init);
@@ -81,10 +80,21 @@ public class Main extends JavaPlugin {
         this.getEventRegistry().registerGlobal(AddPlayerToWorldEvent.class, (event) -> {
             var player = event.getHolder().getComponent(Player.getComponentType());
             var playerRef = event.getHolder().getComponent(PlayerRef.getComponentType());
-            ClaimManager.getInstance().getPlayerNameTracker().setPlayerName(playerRef.getUuid(), player.getDisplayName());
-            ClaimManager.getInstance().markDirty();
+            ClaimManager.getInstance().setPlayerName(playerRef.getUuid(), player.getDisplayName(), System.currentTimeMillis());
         });
 
+        this.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, (event) -> {
+            ClaimManager.getInstance().setPlayerName(event.getPlayerRef().getUuid(), event.getPlayerRef().getUsername(), System.currentTimeMillis());
+        });
+
+        var interaction = getCodecRegistry(Interaction.CODEC);
+        interaction.register("UseBlock", ClaimUseBlockInteraction.class, ClaimUseBlockInteraction.CUSTOM_CODEC);
+        interaction.register("CycleBlockGroup", ClaimCycleBlockGroupInteraction.class, ClaimCycleBlockGroupInteraction.CUSTOM_CODEC);
+        interaction.register("PlaceFluid", ClaimPlaceBucketInteraction.class, ClaimPlaceBucketInteraction.CUSTOM_CODEC);
+        interaction.register("RefillContainer", ClaimPickupBucketInteraction.class, ClaimPickupBucketInteraction.CUSTOM_CODEC);
+
+        partyInactivityTickingSystem = new PartyInactivityThread();
+        partyInactivityTickingSystem.start();
     }
 
 }

@@ -38,9 +38,6 @@ public class SimpleClaimProtectCommand extends AbstractAsyncCommand {
         this.addSubCommand(new OpUnclaimChunkCommand());
         this.addSubCommand(new OpChunkGuiCommand());
     }
-    protected boolean canGeneratePermission() {
-        return false;
-    }
 
     @NonNullDecl
     @Override

@@ -41,13 +41,12 @@ public class OpOverrideCommand extends AbstractAsyncCommand {
                     if (playerRef != null) {
                         var overridesList = ClaimManager.getInstance().getAdminClaimOverrides();
                         if (overridesList.contains(playerRef.getUuid())) {
-                            overridesList.remove(playerRef.getUuid());
+                            ClaimManager.getInstance().removeAdminOverride(playerRef.getUuid());
                             player.sendMessage(CommandMessages.DISABLED_OVERRIDE);
                         } else {
-                            overridesList.add(playerRef.getUuid());
+                            ClaimManager.getInstance().addAdminOverride(playerRef.getUuid());
                             player.sendMessage(CommandMessages.ENABLED_OVERRIDE);
                         }
-                        ClaimManager.getInstance().markDirty();
                     }
                 }, world);
             } else {

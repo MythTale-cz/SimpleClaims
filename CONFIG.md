@@ -52,7 +52,7 @@ These settings control whether party owners are allowed to change specific permi
   interaction permissions.
 - **AllowPartyInteractDoorSettingChanges** (Boolean, Default: `true`): If `true`, party owners can toggle door
   interaction permissions.
-- **AllowPartyInteractBechSettingChanges** (Boolean, Default: `true`): If `true`, party owners can toggle bench
+- **AllowPartyInteractBenchSettingChanges** (Boolean, Default: `true`): If `true`, party owners can toggle bench
   interaction permissions.
 - **AllowPartyInteractChairSettingChanges** (Boolean, Default: `true`): If `true`, party owners can toggle chair
   interaction permissions.
@@ -71,6 +71,9 @@ Global settings that affect claiming and protection across the server.
   claim protections.
 - **BlocksThatIgnoreInteractRestrictions** (String Array, Default: `["gravestone"]`): A list of block IDs that can
   always be interacted with, even in claimed chunks where interactions are otherwise restricted.
+- **PartyInactivityHours** (Integer, Default: `-1`): The number of hours a party can be inactive before it is
+  automatically disbanded. Use `-1` to disable this feature. All members of the party must be inactive for this to
+  trigger.
 
 ## Visual & Map Settings
 
@@ -87,4 +90,5 @@ Settings related to the user interface and visual feedback.
 
 Use these with caution as they might still be in development.
 
-- **EXPERIMENTAL-EnableAlloyEntryTesting** (Boolean, Default: `false`): Enables experimental entry testing logic.
+- **EXPERIMENTAL-EnableAlloyEntryTesting** (Boolean, Default: `false`): Enables experimental entry testing logic. This
+  is a workaround for Hytale's interaction bugs.
