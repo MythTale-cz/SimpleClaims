@@ -22,9 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TitleTickingSystem extends EntityTickingSystem<EntityStore> {
 
-    private static final Message WILDERNESS_MESSAGE = Message.raw("Wilderness").color(Color.GREEN);
+    private static final Message WILDERNESS_MESSAGE = Message.raw("Priroda").color(Color.GREEN);
     private final Message simpleClaimsMessage;
-    private static final String WILDERNESS_TEXT = "Wilderness";
+    private static final String WILDERNESS_TEXT = "Priroda";
     private final Map<UUID, String> playerLastTitle;
 
     public TitleTickingSystem(String topLine) {
