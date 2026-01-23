@@ -91,7 +91,6 @@ public class PartyListGui extends InteractiveCustomUIPage<PartyListGui.PartyList
                 var party = ClaimManager.getInstance().getPartyById(UUID.fromString(index));
                 if (party != null) {
                     ClaimManager.getInstance().disbandParty(party);
-                    ClaimManager.getInstance().markDirty();
                     playerRef.sendMessage(CommandMessages.PARTY_DISBANDED);
                 }
             }

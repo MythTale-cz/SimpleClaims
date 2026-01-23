@@ -14,7 +14,9 @@
     "Hytale:EntityModule": "*",
     "Hytale:InteractionModule": "*"
   },
-  "OptionalDependencies": {},
+  "OptionalDependencies": {
+    "LuckPerms:LuckPerms": "*"
+  },
   "DisabledByDefault": false,
   "Main": "${entry_point}",
   "IncludesAssetPack": true

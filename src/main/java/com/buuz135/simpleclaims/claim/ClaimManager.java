@@ -37,8 +37,6 @@ public class ClaimManager {
     private final Map<UUID, UUID> playerToParty;
     private final Map<UUID, Integer> partyClaimCounts;
     private Set<String> worldsNeedingUpdates;
-    private boolean isDirty;
-    private Thread savingThread;
     private HytaleLogger logger = HytaleLogger.getLogger().getSubLogger("SimpleClaims");
     private PlayerNameTracker playerNameTracker;
     private HashMap<String, PartyInfo> parties;
@@ -54,7 +52,6 @@ public class ClaimManager {
     private ClaimManager() {
         this.adminUsageParty = new ConcurrentHashMap<>();
         this.worldsNeedingUpdates = new HashSet<>();
-        this.isDirty = false;
         this.partyInvites = new ConcurrentHashMap<>();
         this.playerToParty = new ConcurrentHashMap<>();
         this.partyClaimCounts = new ConcurrentHashMap<>();
@@ -117,77 +114,40 @@ public class ClaimManager {
         logger.at(Level.INFO).log("Loading admin overrides data from DB...");
         this.adminOverrides.addAll(this.databaseManager.loadAdminOverrides());
 
-        this.savingThread = new Thread(() -> {
-            while (true) {
-                if (isDirty) {
-                    isDirty = false;
-                    logger.at(Level.INFO).log("Saving data to DB...");
-
-                    try {
-                        for (PartyInfo party : this.parties.values()) {
-                            this.databaseManager.saveParty(party);
-                        }
-                    } catch (Exception e) {
-                        logger.at(Level.SEVERE).log(e.getMessage());
-                    }
-
-                    try {
-                        for (Map.Entry<String, HashMap<String, ChunkInfo>> entry : this.chunks.entrySet()) {
-                            for (ChunkInfo chunk : entry.getValue().values()) {
-                                this.databaseManager.saveClaim(entry.getKey(), chunk);
-                            }
-                        }
-                    } catch (Exception e) {
-                        logger.at(Level.SEVERE).log(e.getMessage());
-                    }
-
-                    try {
-                        for (PlayerNameTracker.PlayerName name : this.playerNameTracker.getNames()) {
-                            this.databaseManager.saveNameCache(name.getUuid(), name.getName(), name.getLastSeen());
-                        }
-                    } catch (Exception e) {
-                        logger.at(Level.SEVERE).log(e.getMessage());
-                    }
-
-                    try {
-                        for (UUID uuid : this.adminOverrides) {
-                            this.databaseManager.saveAdminOverride(uuid);
-                        }
-                    } catch (Exception e) {
-                        logger.at(Level.SEVERE).log(e.getMessage());
-                    }
-
-                    logger.at(Level.INFO).log("Finished saving data to DB...");
-                }
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    logger.at(Level.SEVERE).log("SAVING THREAD ERROR");
-                    logger.at(Level.SEVERE).log(e.getMessage());
-                }
-            }
-        });
-        this.savingThread.start();
-
     }
 
-    public void markDirty() {
-        this.isDirty = true;
+    public void saveParty(PartyInfo partyInfo) {
+        this.databaseManager.saveParty(partyInfo);
+    }
+
+    private void saveClaim(String dimension, ChunkInfo chunkInfo) {
+        this.databaseManager.saveClaim(dimension, chunkInfo);
+    }
+
+    private void saveNameCache(UUID uuid, String name, long lastSeen) {
+        this.databaseManager.saveNameCache(uuid, name, lastSeen);
+    }
+
+    private void saveAdminOverride(UUID uuid) {
+        this.databaseManager.saveAdminOverride(uuid);
     }
 
     public void addParty(PartyInfo partyInfo){
         this.parties.put(partyInfo.getId().toString(), partyInfo);
-        this.databaseManager.saveParty(partyInfo);
+        this.saveParty(partyInfo);
     }
 
     public boolean isAllowedToInteract(UUID playerUUID, String dimension, int chunkX, int chunkZ, Predicate<PartyInfo> interactMethod) {
-        if (adminOverrides.contains(playerUUID)) return true;
+        if (playerUUID != null && adminOverrides.contains(playerUUID)) return true;
 
         var chunkInfo = getChunkRawCoords(dimension, chunkX, chunkZ);
         if (chunkInfo == null) return !Arrays.asList(Main.CONFIG.get().getFullWorldProtection()).contains(dimension);
 
         var chunkParty = getPartyById(chunkInfo.getPartyOwner());
         if (chunkParty == null || interactMethod.test(chunkParty)) return true;
+
+        // If playerUUID is null (e.g., explosion with unknown source), deny in claimed chunks
+        if (playerUUID == null) return false;
 
         if (chunkParty.getPlayerAllies().contains(playerUUID)) return true;
 
@@ -216,7 +176,7 @@ public class ClaimManager {
         party.setModifiedTracked(new ModifiedTracking(playerRef.getUuid(), owner.getDisplayName(), LocalDateTime.now().toString()));
         this.parties.put(party.getId().toString(), party);
         if (!isAdmin) this.playerToParty.put(playerRef.getUuid(), party.getId());
-        this.markDirty();
+        this.saveParty(party);
         return party;
     }
 
@@ -324,7 +284,6 @@ public class ClaimManager {
         this.playerToParty.put(player.getUuid(), party.getId());
         this.partyInvites.remove(player.getUuid());
         databaseManager.saveParty(party);
-        markDirty();
         return invite;
     }
 
@@ -345,7 +304,6 @@ public class ClaimManager {
             player.sendMessage(CommandMessages.PARTY_LEFT);
         }
         databaseManager.saveParty(partyInfo);
-        markDirty();
     }
 
     public void disbandParty(PartyInfo partyInfo) {
@@ -364,7 +322,6 @@ public class ClaimManager {
 
         this.parties.remove(partyInfo.getId().toString());
         databaseManager.deleteParty(partyInfo.getId());
-        markDirty();
     }
 
     public void removeAdminOverride(UUID uuid) {

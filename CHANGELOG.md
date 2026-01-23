@@ -1,3 +1,14 @@
+# 1.0.20
+
+* World map now shows in the claim chunks GUI - ThatGravyBoat
+* Fix Creative Mode block breaks not being blocked + Fix WorldEventSystem block damage from breaking claimed chunks. -
+  Jaxkr
+* Fix coordinate rounding error for negative values due to narrowing casts - XAgent1990
+* Added claim amount permission, more info in CONFIG.md, closes #66
+* Fixed Admin Claiming Gui not working properly, closes #125
+* Removing saving thread to avoid sometimes not saving data in big environments, closes #119 closes #97
+* Added a claiming bypass for chunks that dont have valid parties, closes #108
+
 # 1.0.19
 
 * Replaced interactions with custom ones to allow claim protection, closes #40

@@ -13,6 +13,8 @@ import com.buuz135.simpleclaims.systems.events.*;
 import com.buuz135.simpleclaims.systems.tick.*;
 import com.buuz135.simpleclaims.util.PartyInactivityThread;
 
+import com.buuz135.simpleclaims.systems.tick.WorldMapUpdateTickingSystem;
+import com.buuz135.simpleclaims.util.Permissions;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
@@ -46,6 +48,7 @@ public class Main extends JavaPlugin {
         super.setup();
         CONFIG.save();
         this.getEntityStoreRegistry().registerSystem(new BreakBlockEventSystem());
+        this.getEntityStoreRegistry().registerSystem(new DamageBlockEventSystem());
         this.getEntityStoreRegistry().registerSystem(new PlaceBlockEventSystem());
         this.getEntityStoreRegistry().registerSystem(new InteractEventSystem());
         this.getEntityStoreRegistry().registerSystem(new PickupInteractEventSystem());
@@ -56,6 +59,11 @@ public class Main extends JavaPlugin {
             this.getEntityStoreRegistry().registerSystem(new ChunkBordersTickingSystem());
         this.getEntityStoreRegistry().registerSystem(new CustomDamageEventSystem());
         this.getEntityStoreRegistry().registerSystem(new QueuedCraftClaimFilterSystem());
+
+        // Register global (world-level) event systems for block damage. Allows us to block custom item interactions from damaging claims.
+        this.getEntityStoreRegistry().registerSystem(new GlobalDamageBlockEventSystem());
+        this.getEntityStoreRegistry().registerSystem(new GlobalBreakBlockEventSystem());
+
         this.getChunkStoreRegistry().registerSystem(new WorldMapUpdateTickingSystem());
         this.getCommandRegistry().registerCommand(new SimpleClaimProtectCommand());
         this.getCommandRegistry().registerCommand(new SimpleClaimsPartyCommand());

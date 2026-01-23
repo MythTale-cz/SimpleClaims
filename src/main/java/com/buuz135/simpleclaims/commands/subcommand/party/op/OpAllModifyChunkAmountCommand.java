@@ -6,7 +6,6 @@ import com.buuz135.simpleclaims.claim.party.PartyOverrides;
 import com.buuz135.simpleclaims.commands.CommandMessages;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
-import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.CommandSender;
 import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg;
@@ -47,9 +46,9 @@ public class OpAllModifyChunkAmountCommand extends AbstractAsyncCommand {
                         var selectedAmount = amount.get(commandContext);
                         ClaimManager.getInstance().getParties().values().forEach(party -> {
                             party.setOverride(new PartyOverride(PartyOverrides.CLAIM_CHUNK_AMOUNT, new PartyOverride.PartyOverrideValue("integer", selectedAmount)));
+                            ClaimManager.getInstance().saveParty(party);
                         });
                         player.sendMessage(CommandMessages.MODIFIED_MAX_CHUNK_AMOUNT.param("party_name", "all parties").param("amount", selectedAmount));
-                        ClaimManager.getInstance().markDirty();
                     }
                 }, world);
             } else {

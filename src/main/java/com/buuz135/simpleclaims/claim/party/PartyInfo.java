@@ -3,6 +3,8 @@ package com.buuz135.simpleclaims.claim.party;
 import com.buuz135.simpleclaims.Main;
 import com.buuz135.simpleclaims.claim.ClaimManager;
 import com.buuz135.simpleclaims.claim.tracking.ModifiedTracking;
+import com.buuz135.simpleclaims.util.Permissions;
+import com.hypixel.hytale.server.core.permissions.PermissionsModule;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -128,6 +130,8 @@ public class PartyInfo {
         if (override != null) {
             return (Integer) override.getValue().getTypedValue();
         }
+        var amount = Permissions.getPermissionClaimAmount(owner);
+        if (amount != -1) return amount;
         return Main.CONFIG.get().getDefaultPartyClaimsAmount();
     }
 

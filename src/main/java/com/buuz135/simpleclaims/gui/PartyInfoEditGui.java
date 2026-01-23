@@ -27,11 +27,9 @@ import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.hypixel.hytale.server.worldgen.loader.util.ColorUtil;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.PartyInfoData> {
@@ -73,9 +71,10 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
         }
         if (data.save != null) {
             this.info.setName(this.name);
+            this.description = this.description.replace("\n", "");
             this.info.setDescription(this.description);
             ClaimManager.getInstance().queueMapUpdateForParty(this.info);
-            ClaimManager.getInstance().markDirty();
+            ClaimManager.getInstance().saveParty(this.info);
         }
         if (data.cancel != null) {
             this.close();
@@ -85,7 +84,6 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
             var action = split[0];
             if (action.equals("DeleteInvite")) {
                 ClaimManager.getInstance().getPartyInvites().remove(UUID.fromString(split[1]));
-                ClaimManager.getInstance().markDirty();
                 UICommandBuilder commandBuilder = new UICommandBuilder();
                 UIEventBuilder eventBuilder = new UIEventBuilder();
                 this.build(ref, commandBuilder, eventBuilder, store);
@@ -94,7 +92,7 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
             }
             if (action.equals("DeleteAllyPlayer")) {
                 this.info.getPlayerAllies().remove(UUID.fromString(split[1]));
-                ClaimManager.getInstance().markDirty();
+                ClaimManager.getInstance().saveParty(this.info);
                 UICommandBuilder commandBuilder = new UICommandBuilder();
                 UIEventBuilder eventBuilder = new UIEventBuilder();
                 this.build(ref, commandBuilder, eventBuilder, store);
@@ -103,7 +101,7 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
             }
             if (action.equals("DeleteAllyParty")) {
                 this.info.getPartyAllies().remove(UUID.fromString(split[1]));
-                ClaimManager.getInstance().markDirty();
+                ClaimManager.getInstance().saveParty(this.info);
                 UICommandBuilder commandBuilder = new UICommandBuilder();
                 UIEventBuilder eventBuilder = new UIEventBuilder();
                 this.build(ref, commandBuilder, eventBuilder, store);
@@ -116,25 +114,31 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
             }
             if (action.equals("Delete")){
                 this.info.removeMember(this.info.getMembers()[index]);
-                ClaimManager.getInstance().markDirty();
+                ClaimManager.getInstance().saveParty(this.info);
             }
             if (action.equals("PlaceBlocksSetting")){
                 this.info.setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_PLACE_BLOCKS, new PartyOverride.PartyOverrideValue("bool", !this.info.isBlockPlaceEnabled())));
+                ClaimManager.getInstance().saveParty(this.info);
             }
             if (action.equals("BreakBlocksSetting")){
                 this.info.setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_BREAK_BLOCKS, new PartyOverride.PartyOverrideValue("bool", !this.info.isBlockBreakEnabled())));
+                ClaimManager.getInstance().saveParty(this.info);
             }
             if (action.equals("InteractBlocksSetting")){
                 this.info.setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_INTERACT, new PartyOverride.PartyOverrideValue("bool", !this.info.isBlockInteractEnabled())));
+                ClaimManager.getInstance().saveParty(this.info);
             }
             if (action.equals("PVPSetting")) {
                 this.info.setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_PVP, new PartyOverride.PartyOverrideValue("bool", !this.info.isPVPEnabled())));
+                ClaimManager.getInstance().saveParty(this.info);
             }
             if (action.equals("AllowEntrySetting")) {
                 this.info.setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_ALLOW_ENTRY, new PartyOverride.PartyOverrideValue("bool", !this.info.isAllowEntryEnabled())));
+                ClaimManager.getInstance().saveParty(this.info);
             }
             if (action.equals("FriendlyFireSetting")) {
                 this.info.setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_FRIENDLY_FIRE, new PartyOverride.PartyOverrideValue("bool", !this.info.isFriendlyFireEnabled())));
+                ClaimManager.getInstance().saveParty(this.info);
             }
             UICommandBuilder commandBuilder = new UICommandBuilder();
             UIEventBuilder eventBuilder = new UIEventBuilder();
@@ -166,7 +170,6 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
                         var invited = Universe.get().getPlayer(UUID.fromString(this.inviteDropdown));
                         if (invited != null) {
                             ClaimManager.getInstance().invitePlayerToParty(invited, this.info, this.playerRef);
-                            ClaimManager.getInstance().markDirty();
                             invited.sendMessage(CommandMessages.PARTY_INVITE_RECEIVED.param("party_name", this.info.getName()).param("username", this.playerRef.getUsername()));
                             UICommandBuilder commandBuilder = new UICommandBuilder();
                             UIEventBuilder eventBuilder = new UIEventBuilder();
@@ -187,7 +190,7 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
                 var invited = Universe.get().getPlayer(UUID.fromString(this.alliesDropdown));
                 if (invited != null) { //IS Player
                     this.info.getPlayerAllies().add(invited.getUuid());
-                    ClaimManager.getInstance().markDirty();
+                    ClaimManager.getInstance().saveParty(this.info);
                     UICommandBuilder commandBuilder = new UICommandBuilder();
                     UIEventBuilder eventBuilder = new UIEventBuilder();
                     this.build(ref, commandBuilder, eventBuilder, store);
@@ -197,7 +200,7 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
                     var party = ClaimManager.getInstance().getPartyById(UUID.fromString(this.alliesDropdown));
                     if (party != null) {
                         this.info.getPartyAllies().add(party.getId());
-                        ClaimManager.getInstance().markDirty();
+                        ClaimManager.getInstance().saveParty(this.info);
                         UICommandBuilder commandBuilder = new UICommandBuilder();
                         UIEventBuilder eventBuilder = new UIEventBuilder();
                         this.build(ref, commandBuilder, eventBuilder, store);
