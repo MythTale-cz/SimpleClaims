@@ -28,7 +28,12 @@ public class GlobalDamageBlockEventSystem extends WorldEventSystem<EntityStore, 
 
     @Override
     public void handle(@Nonnull Store<EntityStore> store, @Nonnull CommandBuffer<EntityStore> commandBuffer, @Nonnull DamageBlockEvent event) {
-        String worldName = store.getExternalData().getWorld().getName();
+        var world = store.getExternalData().getWorld();
+        if (world == null) return;
+
+        String worldName = world.getName();
+        if (worldName == null) return;
+
         int x = event.getTargetBlock().getX();
         int z = event.getTargetBlock().getZ();
 

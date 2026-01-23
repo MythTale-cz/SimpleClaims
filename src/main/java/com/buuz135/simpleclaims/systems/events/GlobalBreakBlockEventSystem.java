@@ -28,7 +28,12 @@ public class GlobalBreakBlockEventSystem extends WorldEventSystem<EntityStore, B
 
     @Override
     public void handle(@Nonnull Store<EntityStore> store, @Nonnull CommandBuffer<EntityStore> commandBuffer, @Nonnull BreakBlockEvent event) {
-        String worldName = store.getExternalData().getWorld().getName();
+        var world = store.getExternalData().getWorld();
+        if (world == null) return;
+
+        String worldName = world.getName();
+        if (worldName == null) return;
+
         int x = event.getTargetBlock().getX();
         int z = event.getTargetBlock().getZ();
 
