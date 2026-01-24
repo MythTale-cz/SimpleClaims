@@ -1,3 +1,7 @@
+# 1.0.22
+
+* Updated mod to game update 24-01-2026, closes #137
+
 # 1.0.21
 
 * Fixed database not being created properly on first run, closes #130
